@@ -1,1 +1,1 @@
-# tarot-web
+# Tarot (Web)
