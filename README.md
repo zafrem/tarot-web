@@ -1,1 +1,35 @@
 # Tarot (Web)
+
+A local, browser-based tarot reading app — used like a desktop app, run on
+your own machine.
+
+Card data (78 cards, meanings, and public-domain Rider-Waite-Smith images)
+comes from the [tarot-reader](https://github.com/zafrem/tarot-reader) repo,
+included here as a git submodule. This app reads `tarot-reader/src/data/`
+directly — no Python, no server-side calls into that repo.
+
+## Setup
+
+```bash
+git submodule update --init
+```
+
+## Running
+
+Browsers block `fetch()` of local files over `file://`, so serve this
+directory instead of opening `index.html` directly:
+
+```bash
+python3 -m http.server 8000
+# then open http://localhost:8000
+```
+
+## Updating the card data
+
+```bash
+cd tarot-reader
+git pull origin main
+cd ..
+git add tarot-reader
+git commit -m "Update tarot-reader submodule"
+```
