@@ -1,7 +1,8 @@
 # Tarot (Web)
 
 A local, browser-based tarot reading app — used like a desktop app, run on
-your own machine.
+your own machine, or visited live at
+[zafrem.github.io/tarot-web](https://zafrem.github.io/tarot-web/).
 
 Card data (78 cards, meanings, and public-domain Rider-Waite-Smith images)
 comes from the [tarot-reader](https://github.com/zafrem/tarot-reader) repo,
@@ -33,3 +34,12 @@ cd ..
 git add tarot-reader
 git commit -m "Update tarot-reader submodule"
 ```
+
+## Deployment
+
+Pushes to `main` auto-deploy to GitHub Pages via
+[`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml).
+That workflow checks out with `submodules: recursive` before deploying —
+GitHub Pages' default "deploy from a branch" source does not initialize
+submodules, which would otherwise leave `tarot-reader/` empty on the live
+site and break the deck data fetch.
