@@ -113,9 +113,9 @@ function drawSpread(cards, positions) {
   return drawn.map(drawOne);
 }
 
-function buildCardElement(card, position) {
+function buildCardElement(card, position, index) {
   const wrapper = document.createElement("div");
-  wrapper.className = "card";
+  wrapper.className = `card pos-${index}`;
 
   if (position) {
     const label = document.createElement("div");
@@ -164,16 +164,23 @@ function buildCardElement(card, position) {
   return wrapper;
 }
 
-function renderSpread(cards, positions) {
+function renderSpread(cards, positions, spreadKey) {
   const container = document.getElementById("card-view");
   container.innerHTML = "";
+  container.className = `card-view spread-${spreadKey}`;
   container.hidden = false;
 
   cards.forEach((card, i) => {
-    const el = buildCardElement(card, positions[i]);
+    const el = buildCardElement(card, positions[i], i);
     container.appendChild(el);
     setTimeout(() => el.classList.add("flipped"), i * FLIP_STAGGER_MS);
   });
+}
+
+function resetReading() {
+  const container = document.getElementById("card-view");
+  container.innerHTML = "";
+  container.hidden = true;
 }
 
 document.getElementById("draw-button").addEventListener("click", async () => {
@@ -183,7 +190,7 @@ document.getElementById("draw-button").addEventListener("click", async () => {
     const spreadKey = document.getElementById("spread-select").value;
     const positions = SPREADS[spreadKey].positions;
     const cards = await loadDeck();
-    renderSpread(drawSpread(cards, positions), positions);
+    renderSpread(drawSpread(cards, positions), positions, spreadKey);
   } catch (err) {
     alert(
       "Could not load the tarot deck data. If you opened this file " +
@@ -195,4 +202,13 @@ document.getElementById("draw-button").addEventListener("click", async () => {
   } finally {
     button.disabled = false;
   }
+});
+
+document.getElementById("reset-button").addEventListener("click", resetReading);
+
+// Placeholder only — real translation is a separate, not-yet-built effort.
+// This just remembers the choice; no UI or card text is translated yet.
+let currentLanguage = "en";
+document.getElementById("language-select").addEventListener("change", (e) => {
+  currentLanguage = e.target.value;
 });

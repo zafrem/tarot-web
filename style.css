@@ -21,18 +21,44 @@ body {
   margin: 0;
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
   background: var(--bg);
   color: var(--fg);
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
+.top-bar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 10px 16px;
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+.top-bar select {
+  width: auto;
+  margin-bottom: 0;
+  padding: 6px 10px;
+  font-size: 0.9rem;
+}
+
+.top-bar button {
+  padding: 6px 14px;
+  font-size: 0.9rem;
+}
+
 main {
   width: 100%;
-  max-width: 420px;
+  max-width: 640px;
   padding: 24px;
   text-align: center;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 h1 {
@@ -64,17 +90,96 @@ select {
 }
 
 .card-view {
+  width: 100%;
   margin: 24px 0;
+}
+
+.spread-single {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
+}
+
+.spread-three {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 16px;
 }
 
 .card {
   width: 100%;
   max-width: 220px;
   perspective: 1000px;
+}
+
+.spread-three .card {
+  max-width: 150px;
+}
+
+/* Traditional Celtic Cross layout: a 4x4 cross (card 0/1 share the
+   center cell, 1 rotated 90deg over 0) plus a 4-card staff column.
+   Position indices match tarot-reader's celtic_cross() order. */
+.spread-celtic {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(90px, 1fr)) minmax(90px, 1fr);
+  grid-template-rows: repeat(4, auto);
+  grid-template-areas:
+    ".    crown  .      staff-d"
+    "left center right  staff-c"
+    ".    found  .      staff-b"
+    ".    .      .      staff-a";
+  gap: 10px;
+  align-items: center;
+  justify-items: center;
+}
+
+.spread-celtic .card {
+  max-width: 110px;
+}
+
+.spread-celtic .pos-0 {
+  grid-area: center;
+}
+
+.spread-celtic .pos-1 {
+  grid-area: center;
+  transform: rotate(90deg);
+  z-index: 2;
+}
+
+.spread-celtic .pos-2 {
+  grid-area: found;
+}
+
+.spread-celtic .pos-3 {
+  grid-area: left;
+}
+
+.spread-celtic .pos-4 {
+  grid-area: crown;
+}
+
+.spread-celtic .pos-5 {
+  grid-area: right;
+}
+
+.spread-celtic .pos-6 {
+  grid-area: staff-a;
+}
+
+.spread-celtic .pos-7 {
+  grid-area: staff-b;
+}
+
+.spread-celtic .pos-8 {
+  grid-area: staff-c;
+}
+
+.spread-celtic .pos-9 {
+  grid-area: staff-d;
 }
 
 .position {
@@ -96,6 +201,29 @@ select {
   min-height: 320px;
   transition: transform 0.6s;
   transform-style: preserve-3d;
+}
+
+.spread-three .card-inner {
+  min-height: 230px;
+}
+
+.spread-celtic .card-inner {
+  min-height: 170px;
+}
+
+.spread-celtic .card-front h2 {
+  font-size: 0.8em;
+  margin: 6px 0 2px;
+}
+
+.spread-celtic .card-orientation,
+.spread-celtic .card-meaning {
+  font-size: 0.65em;
+}
+
+.spread-celtic .position,
+.spread-celtic .position-description {
+  font-size: 0.65em;
 }
 
 .card.flipped .card-inner {
