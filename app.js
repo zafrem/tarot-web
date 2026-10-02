@@ -170,9 +170,24 @@ function renderSpread(cards, positions, spreadKey) {
   container.className = `card-view spread-${spreadKey}`;
   container.hidden = false;
 
-  cards.forEach((card, i) => {
-    const el = buildCardElement(card, positions[i], i);
-    container.appendChild(el);
+  const elements = cards.map((card, i) => buildCardElement(card, positions[i], i));
+
+  // Celtic Cross: cards 0 (Present Situation) and 1 (Challenge) share one
+  // grid cell by design (the "crossed" pair) — group them in their own
+  // stack so their labels/descriptions render one above the other instead
+  // of literally overlapping.
+  if (spreadKey === "celtic") {
+    const centerStack = document.createElement("div");
+    centerStack.className = "celtic-center";
+    centerStack.appendChild(elements[0]);
+    centerStack.appendChild(elements[1]);
+    container.appendChild(centerStack);
+    elements.slice(2).forEach((el) => container.appendChild(el));
+  } else {
+    elements.forEach((el) => container.appendChild(el));
+  }
+
+  elements.forEach((el, i) => {
     setTimeout(() => el.classList.add("flipped"), i * FLIP_STAGGER_MS);
   });
 }
@@ -181,6 +196,7 @@ function resetReading() {
   const container = document.getElementById("card-view");
   container.innerHTML = "";
   container.hidden = true;
+  document.getElementById("draw-button").hidden = false;
 }
 
 document.getElementById("draw-button").addEventListener("click", async () => {
@@ -191,6 +207,7 @@ document.getElementById("draw-button").addEventListener("click", async () => {
     const positions = SPREADS[spreadKey].positions;
     const cards = await loadDeck();
     renderSpread(drawSpread(cards, positions), positions, spreadKey);
+    button.hidden = true;
   } catch (err) {
     alert(
       "Could not load the tarot deck data. If you opened this file " +

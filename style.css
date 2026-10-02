@@ -119,12 +119,15 @@ select {
   max-width: 150px;
 }
 
-/* Traditional Celtic Cross layout: a 4x4 cross (card 0/1 share the
-   center cell, 1 rotated 90deg over 0) plus a 4-card staff column.
-   Position indices match tarot-reader's celtic_cross() order. */
+/* Traditional Celtic Cross layout: a 4x4 cross (card 1, Challenge,
+   crosses card 0, Present Situation, in the center cell) plus a
+   4-card staff column. Position indices match tarot-reader's
+   celtic_cross() order. Cards 0/1 are grouped into .celtic-center
+   (see renderSpread in app.js) so their labels stack instead of
+   literally overlapping. */
 .spread-celtic {
   display: grid;
-  grid-template-columns: repeat(3, minmax(90px, 1fr)) minmax(90px, 1fr);
+  grid-template-columns: repeat(3, minmax(90px, 1fr)) minmax(110px, 1fr);
   grid-template-rows: repeat(4, auto);
   grid-template-areas:
     ".    crown  .      staff-d"
@@ -140,14 +143,22 @@ select {
   max-width: 110px;
 }
 
-.spread-celtic .pos-0 {
+.celtic-center {
   grid-area: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
 }
 
-.spread-celtic .pos-1 {
-  grid-area: center;
+/* Card 1's own visual rotates (the "crossed" card); its label and
+   description stay upright, directly above it in the stack. */
+.spread-celtic .pos-1 .card-inner {
   transform: rotate(90deg);
-  z-index: 2;
+}
+
+.spread-celtic .pos-1.flipped .card-inner {
+  transform: rotate(90deg) rotateY(180deg);
 }
 
 .spread-celtic .pos-2 {
