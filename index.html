@@ -11,14 +11,16 @@
     <h1>🔮 Tarot Web</h1>
     <p class="subtitle">For entertainment purposes only.</p>
 
-    <section id="card-view" class="card-view" hidden>
-      <img id="card-image" alt="" />
-      <h2 id="card-name"></h2>
-      <p id="card-orientation"></p>
-      <p id="card-meaning"></p>
-    </section>
+    <label for="spread-select" class="spread-label">Spread</label>
+    <select id="spread-select">
+      <option value="single">Single Card</option>
+      <option value="three">Three-Card (Past / Present / Future)</option>
+      <option value="celtic">Celtic Cross</option>
+    </select>
 
-    <button id="draw-button">Draw a card</button>
+    <section id="card-view" class="card-view" hidden></section>
+
+    <button id="draw-button">Draw</button>
   </main>
 
   <script src="app.js"></script>

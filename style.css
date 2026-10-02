@@ -45,30 +45,104 @@ h1 {
   font-size: 0.9em;
 }
 
-.card-view {
-  margin: 24px 0;
+.spread-label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 0.85em;
+  opacity: 0.7;
 }
 
-.card-view img {
+select {
+  width: 100%;
+  padding: 8px 12px;
+  margin-bottom: 16px;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--accent);
+  background: var(--bg);
+  color: var(--fg);
+}
+
+.card-view {
+  margin: 24px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.card {
+  width: 100%;
   max-width: 220px;
+  perspective: 1000px;
+}
+
+.position {
+  margin-bottom: 2px;
+  font-size: 0.85em;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.position-description {
+  margin-bottom: 6px;
+  font-size: 0.75em;
+  opacity: 0.65;
+}
+
+.card-inner {
+  position: relative;
+  width: 100%;
+  min-height: 320px;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+.card.flipped .card-inner {
+  transform: rotateY(180deg);
+}
+
+.card-back,
+.card-front {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  border-radius: 8px;
+}
+
+.card-back {
+  background: linear-gradient(135deg, var(--accent), var(--bg));
+  border: 2px solid var(--accent);
+}
+
+.card-front {
+  transform: rotateY(180deg);
+  background: var(--bg);
+  text-align: center;
+}
+
+.card-front img {
+  max-width: 100%;
   width: 100%;
   border-radius: 8px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
 }
 
-.card-view h2 {
+.card-front h2 {
   margin: 12px 0 4px;
+  font-size: 1.1em;
 }
 
-#card-orientation {
+.card-orientation {
   margin: 0 0 8px;
   font-weight: 600;
   color: var(--accent);
 }
 
-#card-meaning {
+.card-meaning {
   margin: 0;
   opacity: 0.85;
+  font-size: 0.9em;
 }
 
 button {
