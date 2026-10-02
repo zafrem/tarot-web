@@ -134,7 +134,8 @@ select {
     "left center right  staff-c"
     ".    found  .      staff-b"
     ".    .      .      staff-a";
-  gap: 10px;
+  row-gap: 36px;
+  column-gap: 16px;
   align-items: center;
   justify-items: center;
 }
@@ -148,7 +149,7 @@ select {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 18px;
+  gap: 28px;
 }
 
 /* Card 1's own visual rotates (the "crossed" card); its label and
