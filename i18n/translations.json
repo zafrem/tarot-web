@@ -1,0 +1,130 @@
+{
+  "en": {
+    "title": "Tarot Web",
+    "subtitle": "For entertainment purposes only.",
+    "spreadLabel": "Spread",
+    "spreads": {
+      "single": "Single Card",
+      "three": "Three-Card (Past / Present / Future)",
+      "celtic": "Celtic Cross"
+    },
+    "draw": "Draw",
+    "reset": "Reset",
+    "orientation": { "Upright": "Upright", "Reversed": "Reversed" },
+    "positions": {
+      "three": [
+        { "label": "Past", "description": "What has led to the current situation." },
+        { "label": "Present", "description": "The heart of the matter right now." },
+        { "label": "Future", "description": "Where things are heading if the current path continues." }
+      ],
+      "celtic": [
+        { "label": "Present Situation", "description": "The heart of the matter — your current circumstances." },
+        { "label": "Challenge", "description": "What crosses you — the immediate obstacle or tension." },
+        { "label": "Distant Past/Foundation", "description": "The root cause or foundation this situation is built on." },
+        { "label": "Recent Past", "description": "What's recently passed or is now fading from influence." },
+        { "label": "Possible Outcome", "description": "A potential direction if things continue as they are." },
+        { "label": "Near Future", "description": "What's approaching next." },
+        { "label": "Your Approach", "description": "How you're approaching the situation." },
+        { "label": "External Influences", "description": "People, environment, and outside forces at play." },
+        { "label": "Hopes and Fears", "description": "What you hope for — or secretly fear." },
+        { "label": "Final Outcome", "description": "The likely culmination of the reading." }
+      ]
+    }
+  },
+  "ko": {
+    "title": "타로 웹",
+    "subtitle": "오락 목적으로만 이용해 주세요.",
+    "spreadLabel": "스프레드",
+    "spreads": {
+      "single": "한 장 뽑기",
+      "three": "쓰리 카드 (과거 / 현재 / 미래)",
+      "celtic": "켈틱 크로스"
+    },
+    "draw": "뽑기",
+    "reset": "초기화",
+    "orientation": { "Upright": "정방향", "Reversed": "역방향" },
+    "positions": {
+      "three": [
+        { "label": "과거", "description": "현재 상황을 만든 배경입니다." },
+        { "label": "현재", "description": "지금 이 순간의 핵심입니다." },
+        { "label": "미래", "description": "지금의 흐름이 이어질 경우의 방향입니다." }
+      ],
+      "celtic": [
+        { "label": "현재 상황", "description": "지금 겪고 있는 상황의 핵심입니다." },
+        { "label": "장애물", "description": "당신을 가로막는 즉각적인 문제나 긴장입니다." },
+        { "label": "먼 과거/근원", "description": "이 상황이 만들어진 근본 원인입니다." },
+        { "label": "가까운 과거", "description": "최근에 지나갔거나 영향력이 옅어지고 있는 일입니다." },
+        { "label": "가능한 결과", "description": "지금 흐름이 이어질 때의 잠재적 방향입니다." },
+        { "label": "가까운 미래", "description": "곧 다가올 일입니다." },
+        { "label": "당신의 태도", "description": "상황에 접근하는 당신의 방식입니다." },
+        { "label": "외부 영향", "description": "주변 사람과 환경, 외부 요인입니다." },
+        { "label": "희망과 두려움", "description": "바라는 것, 혹은 은밀히 두려워하는 것입니다." },
+        { "label": "최종 결과", "description": "리딩이 향하는 가장 가능성 높은 결말입니다." }
+      ]
+    }
+  },
+  "ja": {
+    "title": "タロット ウェブ",
+    "subtitle": "娯楽目的のみでご利用ください。",
+    "spreadLabel": "スプレッド",
+    "spreads": {
+      "single": "ワンカード",
+      "three": "スリーカード（過去 / 現在 / 未来）",
+      "celtic": "ケルト十字"
+    },
+    "draw": "引く",
+    "reset": "リセット",
+    "orientation": { "Upright": "正位置", "Reversed": "逆位置" },
+    "positions": {
+      "three": [
+        { "label": "過去", "description": "現在の状況につながった背景です。" },
+        { "label": "現在", "description": "今まさに起きていることの核心です。" },
+        { "label": "未来", "description": "今の流れが続いた場合の行き先です。" }
+      ],
+      "celtic": [
+        { "label": "現在の状況", "description": "今の状況の核心です。" },
+        { "label": "障害", "description": "あなたを阻む直接的な課題や緊張です。" },
+        { "label": "遠い過去・土台", "description": "この状況の根本原因や土台です。" },
+        { "label": "最近の過去", "description": "最近過ぎ去った、または影響が薄れつつあることです。" },
+        { "label": "可能な結果", "description": "今の流れが続いた場合に考えられる方向です。" },
+        { "label": "近い未来", "description": "まもなく訪れることです。" },
+        { "label": "あなたの姿勢", "description": "状況への向き合い方です。" },
+        { "label": "周囲の影響", "description": "周囲の人・環境・外的要因です。" },
+        { "label": "希望と不安", "description": "望んでいること、あるいはひそかに恐れていることです。" },
+        { "label": "最終結果", "description": "リーディングが行き着く可能性の高い結末です。" }
+      ]
+    }
+  },
+  "zh": {
+    "title": "塔罗网页",
+    "subtitle": "仅供娱乐之用。",
+    "spreadLabel": "牌阵",
+    "spreads": {
+      "single": "单张牌",
+      "three": "三张牌（过去 / 现在 / 未来）",
+      "celtic": "凯尔特十字"
+    },
+    "draw": "抽牌",
+    "reset": "重置",
+    "orientation": { "Upright": "正位", "Reversed": "逆位" },
+    "positions": {
+      "three": [
+        { "label": "过去", "description": "导致当前状况的原因。" },
+        { "label": "现在", "description": "当下事情的核心。" },
+        { "label": "未来", "description": "若按当前走向发展，事情将走向何方。" }
+      ],
+      "celtic": [
+        { "label": "当前处境", "description": "当前状况的核心。" },
+        { "label": "挑战", "description": "横亘在你面前的直接阻碍或紧张关系。" },
+        { "label": "远因/根基", "description": "这一状况形成的根本原因或基础。" },
+        { "label": "近期过去", "description": "刚刚过去、影响正在减弱的事情。" },
+        { "label": "可能结果", "description": "若延续当前走向，可能出现的方向。" },
+        { "label": "近期未来", "description": "即将到来的事情。" },
+        { "label": "你的态度", "description": "你面对这一状况的方式。" },
+        { "label": "外部影响", "description": "周围的人、环境及外部因素。" },
+        { "label": "希望与恐惧", "description": "你所期望的，或暗自担心的事情。" },
+        { "label": "最终结果", "description": "这次占卜最可能指向的结局。" }
+      ]
+    }
+  }
+}
