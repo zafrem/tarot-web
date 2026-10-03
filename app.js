@@ -238,6 +238,7 @@ function renderSpread(cards, spreadKey) {
     setTimeout(() => el.classList.add("flipped"), i * FLIP_STAGGER_MS);
     el.addEventListener("click", () => openCardModal(i));
   });
+  document.getElementById("save-reading-button").hidden = false;
 }
 
 function fillCardModal(index) {
@@ -278,12 +279,197 @@ function closeCardModal() {
   document.getElementById("card-modal").hidden = true;
 }
 
+const EXPORT_SCALE = 2;
+const EXPORT_CARD_W = 240;
+const EXPORT_IMAGE_H = 360;
+const EXPORT_PAD = 24;
+const EXPORT_COL_GAP = 32;
+const EXPORT_ROW_GAP = 40;
+const EXPORT_FONT = 'system-ui, -apple-system, "Segoe UI", "Noto Sans CJK KR", "Noto Sans CJK JP", "Noto Sans CJK SC", sans-serif';
+
+// Grid cell (col, row) for each card index, matching the on-screen Celtic Cross.
+const SPREAD_CELLS = {
+  single: [{ col: 0, row: 0 }],
+  three: [{ col: 0, row: 0 }, { col: 1, row: 0 }, { col: 2, row: 0 }],
+  celtic: [
+    { col: 1, row: 1 }, // 0 Present Situation
+    { col: 1, row: 2 }, // 1 Challenge
+    { col: 1, row: 3 }, // 2 Distant Past/Foundation
+    { col: 0, row: 1 }, // 3 Recent Past
+    { col: 1, row: 0 }, // 4 Possible Outcome
+    { col: 2, row: 1 }, // 5 Near Future
+    { col: 3, row: 0 }, // 6 Your Approach
+    { col: 3, row: 1 }, // 7 External Influences
+    { col: 3, row: 2 }, // 8 Hopes and Fears
+    { col: 3, row: 3 }, // 9 Final Outcome
+  ],
+};
+
+function cssVar(name) {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+
+function loadImage(src) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => resolve(null);
+    img.src = src;
+  });
+}
+
+function wrapText(ctx, text, maxWidth) {
+  const lines = [];
+  let line = "";
+  for (const token of text.split(/(\s+)/)) {
+    if (!token) continue;
+    if (!line && /^\s+$/.test(token)) continue;
+    const candidate = line + token;
+    if (ctx.measureText(candidate).width <= maxWidth) {
+      line = candidate;
+      continue;
+    }
+    if (line.trim()) {
+      lines.push(line.trimEnd());
+      line = "";
+    }
+    for (const ch of token) {
+      if (!line && /\s/.test(ch)) continue;
+      const next = line + ch;
+      if (line && ctx.measureText(next).width > maxWidth) {
+        lines.push(line);
+        line = ch;
+      } else {
+        line = next;
+      }
+    }
+  }
+  if (line.trim()) lines.push(line.trimEnd());
+  return lines;
+}
+
+function exportTextBlocks(ctx, index) {
+  const { englishName, orientation } = currentReading.cards[index];
+  const { name, meaning, orientationLabel } = resolveCardText(englishName, orientation, currentLanguage);
+  const position = resolvePosition(currentReading.spreadKey, index, currentLanguage);
+  const blocks = [];
+  const add = (text, font, color, lineHeight, gapAfter, alpha = 1) => {
+    ctx.font = font;
+    blocks.push({ lines: wrapText(ctx, text, EXPORT_CARD_W), font, color, lineHeight, gapAfter, alpha });
+  };
+  const accent = cssVar("--accent");
+  const fg = cssVar("--fg");
+  if (position) {
+    add(position.label, `600 22px ${EXPORT_FONT}`, accent, 28, 2);
+    add(position.description, `18px ${EXPORT_FONT}`, fg, 24, 10, 0.75);
+  }
+  add(name, `700 26px ${EXPORT_FONT}`, fg, 32, 4);
+  add(orientationLabel, `600 20px ${EXPORT_FONT}`, accent, 26, 6);
+  add(meaning, `18px ${EXPORT_FONT}`, fg, 26, 0);
+  return blocks;
+}
+
+function layoutExport(cells, measureCtx) {
+  const items = cells.map((cell) => {
+    const blocks = exportTextBlocks(measureCtx, cell.index);
+    const textHeight = blocks.reduce((sum, b) => sum + b.lines.length * b.lineHeight + b.gapAfter, 0);
+    return { ...cell, blocks, height: EXPORT_IMAGE_H + 14 + textHeight };
+  });
+  const cols = Math.max(...items.map((i) => i.col)) + 1;
+  const rows = Math.max(...items.map((i) => i.row)) + 1;
+  const rowHeights = [];
+  for (let r = 0; r < rows; r++) {
+    rowHeights.push(Math.max(0, ...items.filter((i) => i.row === r).map((i) => i.height)));
+  }
+  const rowY = [];
+  let y = EXPORT_PAD;
+  for (let r = 0; r < rows; r++) {
+    rowY.push(y);
+    y += rowHeights[r] + EXPORT_ROW_GAP;
+  }
+  items.forEach((item) => {
+    item.x = EXPORT_PAD + item.col * (EXPORT_CARD_W + EXPORT_COL_GAP);
+    item.y = rowY[item.row];
+  });
+  return {
+    items,
+    width: EXPORT_PAD * 2 + cols * EXPORT_CARD_W + (cols - 1) * EXPORT_COL_GAP,
+    height: rowY[rows - 1] + rowHeights[rows - 1] + EXPORT_PAD,
+  };
+}
+
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+async function exportCells(cells, filename) {
+  const measureCtx = document.createElement("canvas").getContext("2d");
+  const layout = layoutExport(cells, measureCtx);
+  const images = await Promise.all(
+    layout.items.map((item) =>
+      loadImage(IMAGES_BASE + deckByName[currentReading.cards[item.index].englishName].images.default)
+    )
+  );
+
+  const canvas = document.createElement("canvas");
+  canvas.width = layout.width * EXPORT_SCALE;
+  canvas.height = layout.height * EXPORT_SCALE;
+  const ctx = canvas.getContext("2d");
+  ctx.scale(EXPORT_SCALE, EXPORT_SCALE);
+  ctx.fillStyle = cssVar("--bg");
+  ctx.fillRect(0, 0, layout.width, layout.height);
+  ctx.textBaseline = "top";
+
+  layout.items.forEach((item, k) => {
+    const img = images[k];
+    if (img) {
+      const scale = Math.min(EXPORT_CARD_W / img.naturalWidth, EXPORT_IMAGE_H / img.naturalHeight);
+      const w = img.naturalWidth * scale;
+      const h = img.naturalHeight * scale;
+      ctx.drawImage(img, item.x + (EXPORT_CARD_W - w) / 2, item.y + (EXPORT_IMAGE_H - h) / 2, w, h);
+    }
+    let ty = item.y + EXPORT_IMAGE_H + 14;
+    item.blocks.forEach((block) => {
+      ctx.font = block.font;
+      ctx.fillStyle = block.color;
+      ctx.globalAlpha = block.alpha;
+      block.lines.forEach((line) => {
+        ctx.fillText(line, item.x, ty);
+        ty += block.lineHeight;
+      });
+      ctx.globalAlpha = 1;
+      ty += block.gapAfter;
+    });
+  });
+
+  canvas.toBlob((blob) => downloadBlob(blob, filename), "image/png");
+}
+
+function saveReading() {
+  if (!currentReading) return;
+  const cells = SPREAD_CELLS[currentReading.spreadKey].map((cell, index) => ({ index, ...cell }));
+  exportCells(cells, "tarot-reading.png");
+}
+
+function saveCard() {
+  if (modalIndex === null) return;
+  exportCells([{ index: modalIndex, col: 0, row: 0 }], `tarot-card-${modalIndex + 1}.png`);
+}
+
 function resetReading() {
   closeCardModal();
   const container = document.getElementById("card-view");
   container.innerHTML = "";
   container.hidden = true;
   currentReading = null;
+  document.getElementById("save-reading-button").hidden = true;
 }
 
 function applyStaticUIText(lang) {
@@ -296,6 +482,8 @@ function applyStaticUIText(lang) {
   document.getElementById("spread-select-label").textContent = t(lang, "spreadLabel");
   document.getElementById("draw-button").textContent = t(lang, "draw");
   document.getElementById("reset-button").textContent = t(lang, "reset");
+  document.getElementById("save-reading-button").textContent = t(lang, "saveReading");
+  document.getElementById("card-modal-save").textContent = t(lang, "saveCard");
 
   const spreadSelect = document.getElementById("spread-select");
   for (const option of spreadSelect.options) {
@@ -342,6 +530,8 @@ document.getElementById("draw-button").addEventListener("click", async () => {
 document.getElementById("reset-button").addEventListener("click", resetReading);
 
 document.getElementById("card-modal-close").addEventListener("click", closeCardModal);
+document.getElementById("card-modal-save").addEventListener("click", saveCard);
+document.getElementById("save-reading-button").addEventListener("click", saveReading);
 document.querySelector("#card-modal .card-modal-backdrop").addEventListener("click", closeCardModal);
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && modalIndex !== null) closeCardModal();
