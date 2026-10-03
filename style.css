@@ -193,21 +193,17 @@ select {
   gap: 40px;
 }
 
-/* Card 1's own visual rotates (the "crossed" card). Its label and
-   description now trail below the card instead of leading it (see
-   buildCardElement in app.js) -- margin-top on the wrapper gives it some
-   breathing room from Present Situation's card above, and margin-top on
-   its label separates it from its own (rotated) card below. */
+/* Card 1 (Challenge) displays upright, same as every other card -- no
+   rotation. A rotated "crossed card" look was tried, but rotating the
+   whole card visually swaps its width/height, and since its height is
+   content-driven (taller than it is wide), the rotated result was
+   wider than its column and bled into the neighboring card. Its label
+   and description still trail below the card instead of leading it
+   (see buildCardElement in app.js) -- margin-top on the wrapper gives
+   it some breathing room from Present Situation's card above, and
+   margin-top on its label separates it from its own card below. */
 .spread-celtic .pos-1 {
   margin-top: 12px;
-}
-
-.spread-celtic .pos-1 .card-inner {
-  transform: rotate(90deg);
-}
-
-.spread-celtic .pos-1.flipped .card-inner {
-  transform: rotate(90deg) rotateY(180deg);
 }
 
 .spread-celtic .pos-1 .position {
