@@ -198,17 +198,34 @@ function renderSpread(cards, spreadKey) {
     buildCardElement(card.englishName, card.orientation, i, spreadKey)
   );
 
-  // Celtic Cross: cards 0 (Present Situation) and 1 (Challenge) share one
-  // grid cell by design (the "crossed" pair) — group them in their own
-  // stack so their labels/descriptions render one above the other instead
-  // of literally overlapping.
+  // Celtic Cross: the cross (positions 0-5) and the staff (6-9) are built
+  // as two independent layout containers, not one shared grid. Coupling
+  // them into a single grid previously made the staff cards' row heights
+  // depend on the cross's tallest row (the center card-stack), which
+  // pushed staff cards to inconsistent vertical positions relative to
+  // each other and to the cross's "right" card — producing overlap
+  // rather than clean spacing. As two separate flex layouts, each stacks
+  // with its own consistent gap regardless of the other's content height.
   if (spreadKey === "celtic") {
+    const crossGrid = document.createElement("div");
+    crossGrid.className = "celtic-cross-grid";
+
+    // Cards 0 (Present Situation) and 1 (Challenge) share one grid cell
+    // by design (the "crossed" pair) — group them in their own stack so
+    // their labels/descriptions render one above the other instead of
+    // literally overlapping.
     const centerStack = document.createElement("div");
     centerStack.className = "celtic-center";
     centerStack.appendChild(elements[0]);
     centerStack.appendChild(elements[1]);
-    container.appendChild(centerStack);
-    elements.slice(2).forEach((el) => container.appendChild(el));
+    crossGrid.appendChild(centerStack);
+    elements.slice(2, 6).forEach((el) => crossGrid.appendChild(el));
+    container.appendChild(crossGrid);
+
+    const staff = document.createElement("div");
+    staff.className = "celtic-staff";
+    elements.slice(6).forEach((el) => staff.appendChild(el));
+    container.appendChild(staff);
   } else {
     elements.forEach((el) => container.appendChild(el));
   }

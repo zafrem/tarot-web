@@ -119,37 +119,53 @@ select {
   max-width: 150px;
 }
 
-/* Traditional Celtic Cross layout: a 4x4 cross (card 1, Challenge,
-   crosses card 0, Present Situation, in the center cell) plus a
-   4-card staff column. Position indices match tarot-reader's
-   celtic_cross() order. Cards 0/1 are grouped into .celtic-center
-   (see renderSpread in app.js) so their labels stack instead of
-   literally overlapping. */
+/* Traditional Celtic Cross layout: the cross (positions 0-5) and the
+   4-card staff are two independent layout containers (see renderSpread
+   in app.js), not one shared grid — so the staff's spacing never
+   depends on the cross's tallest row (the center card-stack). Position
+   indices match tarot-reader's celtic_cross() order. */
 .spread-celtic {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 32px;
+}
+
+.spread-celtic .card {
+  max-width: 120px;
+}
+
+.celtic-cross-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(90px, 1fr)) minmax(110px, 1fr);
-  grid-template-rows: repeat(4, auto);
+  grid-template-columns: repeat(3, minmax(100px, 1fr));
+  grid-template-rows: repeat(3, auto);
   grid-template-areas:
-    ".    crown  .      staff-d"
-    "left center right  staff-c"
-    ".    found  .      staff-b"
-    ".    .      .      staff-a";
-  row-gap: 36px;
-  column-gap: 16px;
+    ".    crown  ."
+    "left center right"
+    ".    found  .";
+  row-gap: 40px;
+  column-gap: 20px;
   align-items: center;
   justify-items: center;
 }
 
-.spread-celtic .card {
-  max-width: 110px;
-}
-
+/* Cards 0 (Present Situation) and 1 (Challenge) share one grid cell by
+   design (the "crossed" pair) — stacked here so their labels/
+   descriptions render one above the other instead of overlapping. */
 .celtic-center {
   grid-area: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 28px;
+  gap: 32px;
+}
+
+.celtic-staff {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
 }
 
 /* Card 1's own visual rotates (the "crossed" card); its label and
@@ -176,22 +192,6 @@ select {
 
 .spread-celtic .pos-5 {
   grid-area: right;
-}
-
-.spread-celtic .pos-6 {
-  grid-area: staff-a;
-}
-
-.spread-celtic .pos-7 {
-  grid-area: staff-b;
-}
-
-.spread-celtic .pos-8 {
-  grid-area: staff-c;
-}
-
-.spread-celtic .pos-9 {
-  grid-area: staff-d;
 }
 
 .position {
