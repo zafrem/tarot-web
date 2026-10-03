@@ -211,16 +211,8 @@ select {
   grid-area: found;
 }
 
-.spread-celtic .pos-3 {
-  grid-area: left;
-}
-
 .spread-celtic .pos-4 {
   grid-area: crown;
-}
-
-.spread-celtic .pos-5 {
-  grid-area: right;
 }
 
 .position {
