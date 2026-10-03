@@ -21,16 +21,17 @@
     <h1 id="app-title">Tarot Web</h1>
     <p id="app-subtitle" class="subtitle">For entertainment purposes only.</p>
 
-    <label for="spread-select" id="spread-select-label" class="spread-label">Spread</label>
-    <select id="spread-select">
-      <option value="single">Single Card</option>
-      <option value="three">Three-Card (Past / Present / Future)</option>
-      <option value="celtic">Celtic Cross</option>
-    </select>
+    <div class="spread-row">
+      <label for="spread-select" id="spread-select-label" class="spread-label">Spread</label>
+      <select id="spread-select">
+        <option value="single">Single Card</option>
+        <option value="three">Three-Card (Past / Present / Future)</option>
+        <option value="celtic">Celtic Cross</option>
+      </select>
+      <button id="draw-button">Draw</button>
+    </div>
 
     <section id="card-view" class="card-view" hidden></section>
-
-    <button id="draw-button">Draw</button>
   </main>
 
   <script src="app.js"></script>

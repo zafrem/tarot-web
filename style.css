@@ -89,6 +89,31 @@ select {
   color: var(--fg);
 }
 
+/* Spread dropdown and Draw button share one row, button to the right. */
+.spread-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.spread-row .spread-label {
+  flex-shrink: 0;
+  margin-bottom: 0;
+}
+
+.spread-row select {
+  flex: 1;
+  width: auto;
+  margin-bottom: 0;
+}
+
+.spread-row button {
+  flex-shrink: 0;
+  padding: 8px 16px;
+}
+
 .card-view {
   width: 100%;
   margin: 24px 0;
@@ -242,20 +267,26 @@ select {
   transform: rotateY(180deg);
 }
 
-.card-back,
-.card-front {
+.card-back {
   position: absolute;
   inset: 0;
   backface-visibility: hidden;
   border-radius: 8px;
-}
-
-.card-back {
   background: linear-gradient(135deg, var(--accent), var(--bg));
   border: 2px solid var(--accent);
 }
 
+/* Not absolutely positioned, unlike .card-back: this is the one in-flow
+   child of .card-inner, so it's what actually determines the card's
+   rendered height. min-height on .card-inner is a floor, not a fixed
+   height — if this face's content (name/orientation/meaning) needs more
+   room, the card now grows to fit it instead of overflowing past a
+   fixed box and visually colliding with whatever follows. The rotateY
+   transform doesn't affect layout sizing, only the painted rotation. */
 .card-front {
+  position: relative;
+  backface-visibility: hidden;
+  border-radius: 8px;
   transform: rotateY(180deg);
   background: var(--bg);
   text-align: center;
