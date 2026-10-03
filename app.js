@@ -220,12 +220,9 @@ function renderSpread(cards, spreadKey) {
     const centerStack = document.createElement("div");
     centerStack.className = "celtic-center";
     centerStack.appendChild(elements[0]);
-    centerStack.appendChild(elements[3]);
-    centerStack.appendChild(elements[5]);
     centerStack.appendChild(elements[1]);
     crossGrid.appendChild(centerStack);
-    crossGrid.appendChild(elements[4]);
-    crossGrid.appendChild(elements[2]);
+    elements.slice(2, 6).forEach((el) => crossGrid.appendChild(el));
     container.appendChild(crossGrid);
 
     const staff = document.createElement("div");
