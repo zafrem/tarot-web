@@ -215,28 +215,29 @@ function renderSpread(cards, spreadKey) {
     buildCardElement(card.englishName, card.orientation, i, spreadKey)
   );
 
-  // Celtic Cross: the cross (positions 0-5) and the staff (6-9) are built
-  // as two independent layout containers, not one shared grid. Coupling
-  // them into a single grid previously made the staff cards' row heights
-  // depend on the cross's tallest row (the center card-stack), which
-  // pushed staff cards to inconsistent vertical positions relative to
-  // each other and to the cross's "right" card — producing overlap
-  // rather than clean spacing. As two separate flex layouts, each stacks
-  // with its own consistent gap regardless of the other's content height.
+  // Celtic Cross is built as three independent layout containers (a
+  // vertical sequence, the remaining cross cells, and the staff), not
+  // one shared grid — coupling them previously made cards' row heights
+  // depend on each other's tallest content, producing overlap rather
+  // than clean spacing. As separate containers, each stacks with its
+  // own consistent gap regardless of the others' content height.
   if (spreadKey === "celtic") {
+    // Present Situation (0), Recent Past (3), Near Future (5), and
+    // Challenge (1) read as one vertical sequence, in that order — not
+    // spatially placed in the cross grid. Foundation (2) and Possible
+    // Outcome (4) keep their existing grid cells.
+    const sequence = document.createElement("div");
+    sequence.className = "celtic-sequence";
+    sequence.appendChild(elements[0]);
+    sequence.appendChild(elements[3]);
+    sequence.appendChild(elements[5]);
+    sequence.appendChild(elements[1]);
+    container.appendChild(sequence);
+
     const crossGrid = document.createElement("div");
     crossGrid.className = "celtic-cross-grid";
-
-    // Cards 0 (Present Situation) and 1 (Challenge) share one grid cell
-    // by design (the "crossed" pair) — group them in their own stack so
-    // their labels/descriptions render one above the other instead of
-    // literally overlapping.
-    const centerStack = document.createElement("div");
-    centerStack.className = "celtic-center";
-    centerStack.appendChild(elements[0]);
-    centerStack.appendChild(elements[1]);
-    crossGrid.appendChild(centerStack);
-    elements.slice(2, 6).forEach((el) => crossGrid.appendChild(el));
+    crossGrid.appendChild(elements[4]);
+    crossGrid.appendChild(elements[2]);
     container.appendChild(crossGrid);
 
     const staff = document.createElement("div");

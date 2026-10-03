@@ -144,10 +144,9 @@ select {
   max-width: 150px;
 }
 
-/* Traditional Celtic Cross layout: the cross (positions 0-5) and the
-   4-card staff are two independent layout containers (see renderSpread
-   in app.js), not one shared grid — so the staff's spacing never
-   depends on the cross's tallest row (the center card-stack). Position
+/* Celtic Cross layout: three independent layout containers (see
+   renderSpread in app.js), not one shared grid — so none of their
+   spacing depends on another container's tallest content. Position
    indices match tarot-reader's celtic_cross() order. */
 .spread-celtic {
   display: flex;
@@ -161,29 +160,25 @@ select {
   max-width: 120px;
 }
 
-.celtic-cross-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(100px, 1fr));
-  grid-template-rows: repeat(3, auto);
-  grid-template-areas:
-    ".    crown  ."
-    "left center right"
-    ".    found  .";
-  row-gap: 40px;
-  column-gap: 20px;
-  align-items: center;
-  justify-items: center;
-}
-
-/* Cards 0 (Present Situation) and 1 (Challenge) share one grid cell by
-   design (the "crossed" pair) — stacked here so their labels/
-   descriptions render one above the other instead of overlapping. */
-.celtic-center {
-  grid-area: center;
+/* Present Situation (0), Recent Past (3), Near Future (5), and
+   Challenge (1) read as one vertical sequence, in that order. */
+.celtic-sequence {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 32px;
+}
+
+/* Foundation (2) and Possible Outcome (4) keep their existing
+   crown-above-found grid relationship. */
+.celtic-cross-grid {
+  display: grid;
+  grid-template-columns: minmax(100px, 1fr);
+  grid-template-areas:
+    "crown"
+    "found";
+  row-gap: 40px;
+  justify-items: center;
 }
 
 .celtic-staff {
@@ -200,7 +195,7 @@ select {
    wider than its column and bled into the neighboring card. Its label
    and description still trail below the card instead of leading it
    (see buildCardElement in app.js) -- margin-top on the wrapper gives
-   it some breathing room from Present Situation's card above, and
+   it some breathing room from the card above it in the sequence, and
    margin-top on its label separates it from its own card below. */
 .spread-celtic .pos-1 {
   margin-top: 12px;
@@ -214,16 +209,8 @@ select {
   grid-area: found;
 }
 
-.spread-celtic .pos-3 {
-  grid-area: left;
-}
-
 .spread-celtic .pos-4 {
   grid-area: crown;
-}
-
-.spread-celtic .pos-5 {
-  grid-area: right;
 }
 
 .position {
