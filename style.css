@@ -154,11 +154,11 @@ select {
   flex-wrap: wrap;
   justify-content: center;
   align-items: flex-start;
-  gap: 32px;
+  gap: 24px;
 }
 
 .spread-celtic .card {
-  max-width: 120px;
+  max-width: 110px;
 }
 
 .celtic-cross-grid {
@@ -170,7 +170,7 @@ select {
     "left center right"
     ".    found  .";
   row-gap: 40px;
-  column-gap: 64px;
+  column-gap: 48px;
   align-items: center;
   justify-items: center;
 }
