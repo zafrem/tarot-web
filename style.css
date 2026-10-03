@@ -84,7 +84,7 @@ select {
   margin-bottom: 16px;
   font-size: 1rem;
   border-radius: 8px;
-  border: 1px solid var(--accent);
+  border: 1px solid color-mix(in srgb, var(--fg) 25%, transparent);
   background: var(--bg);
   color: var(--fg);
 }
