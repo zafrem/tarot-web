@@ -452,15 +452,28 @@ async function exportCells(cells, filename) {
   canvas.toBlob((blob) => downloadBlob(blob, filename), "image/png");
 }
 
+const SPREAD_FILENAME_NAMES = { single: "Single Card", three: "Three-Card", celtic: "Celtic Cross" };
+
+function exportFilename(spreadKey, suffix) {
+  const location = document.getElementById("location-input").value.trim().replace(/[\\/:*?"<>|]/g, "");
+  const now = new Date();
+  const pad = (n) => String(n).padStart(2, "0");
+  const stamp = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}`;
+  return [SPREAD_FILENAME_NAMES[spreadKey], location, stamp, suffix].filter(Boolean).join("_") + ".png";
+}
+
 function saveReading() {
   if (!currentReading) return;
   const cells = SPREAD_CELLS[currentReading.spreadKey].map((cell, index) => ({ index, ...cell }));
-  exportCells(cells, "tarot-reading.png");
+  exportCells(cells, exportFilename(currentReading.spreadKey));
 }
 
 function saveCard() {
   if (modalIndex === null) return;
-  exportCells([{ index: modalIndex, col: 0, row: 0 }], `tarot-card-${modalIndex + 1}.png`);
+  exportCells(
+    [{ index: modalIndex, col: 0, row: 0 }],
+    exportFilename(currentReading.spreadKey, `Card ${modalIndex + 1}`)
+  );
 }
 
 function resetReading() {
@@ -484,6 +497,7 @@ function applyStaticUIText(lang) {
   document.getElementById("reset-button").textContent = t(lang, "reset");
   document.getElementById("save-reading-button").textContent = t(lang, "saveReading");
   document.getElementById("card-modal-save").textContent = t(lang, "saveCard");
+  document.getElementById("location-input").placeholder = t(lang, "locationPlaceholder");
 
   const spreadSelect = document.getElementById("spread-select");
   for (const option of spreadSelect.options) {
