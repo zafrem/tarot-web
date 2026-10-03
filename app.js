@@ -191,6 +191,7 @@ function updateCardElementText(wrapper, englishName, orientation, index, spreadK
 }
 
 function renderSpread(cards, spreadKey) {
+  stopIdleTrail();
   const container = document.getElementById("card-view");
   container.innerHTML = "";
   container.className = `card-view spread-${spreadKey}`;
@@ -280,9 +281,9 @@ function closeCardModal() {
 }
 
 const TRAIL_MS = 3000;
-const TRAIL_W = 360;
-const TRAIL_H = 240;
-const TRAIL_LINKS = [90, 70, 50];
+const TRAIL_W = 480;
+const TRAIL_H = 320;
+const TRAIL_LINKS = [120, 93, 67];
 const TRAIL_FREQ = [0.45, 0.7, 1.1];
 const TRAIL_AMP = [0.75, 0.6, 0.5];
 
@@ -290,7 +291,7 @@ const TRAIL_AMP = [0.75, 0.6, 0.5];
 // positions, base first, end effector last.
 function armPoints(ms, phases) {
   const sec = ms / 1000;
-  const pts = [{ x: TRAIL_W / 2, y: TRAIL_H - 16 }];
+  const pts = [{ x: TRAIL_W / 2, y: TRAIL_H - 20 }];
   let cumulative = 0;
   TRAIL_LINKS.forEach((length, i) => {
     cumulative += TRAIL_AMP[i] * Math.sin(2 * Math.PI * TRAIL_FREQ[i] * sec + phases[i]);
@@ -300,8 +301,11 @@ function armPoints(ms, phases) {
   return pts;
 }
 
-function runTrailAnimation() {
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return Promise.resolve();
+let idleTrailFrame = null;
+
+function startIdleTrail() {
+  if (idleTrailFrame !== null) return;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
   const canvas = document.getElementById("trail-canvas");
   const dpr = window.devicePixelRatio || 1;
@@ -316,46 +320,46 @@ function runTrailAnimation() {
   const bg = cssVar("--bg");
   const fg = cssVar("--fg");
   const accent = cssVar("--accent");
+  const start = performance.now();
 
-  return new Promise((resolve) => {
-    const start = performance.now();
-    const frame = (now) => {
-      const elapsed = now - start;
-      const pts = armPoints(elapsed, phases);
-      trail.push(pts[pts.length - 1]);
+  const frame = (now) => {
+    const elapsed = now - start;
+    const pts = armPoints(elapsed, phases);
+    trail.push({ x: pts[pts.length - 1].x, y: pts[pts.length - 1].y, t: elapsed });
+    while (trail.length && elapsed - trail[0].t > TRAIL_MS) trail.shift();
 
-      ctx.globalAlpha = 1;
-      ctx.fillStyle = bg;
-      ctx.fillRect(0, 0, TRAIL_W, TRAIL_H);
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, TRAIL_W, TRAIL_H);
 
-      ctx.strokeStyle = accent;
-      ctx.lineWidth = 2;
-      ctx.lineCap = "round";
-      for (let i = 1; i < trail.length; i++) {
-        ctx.globalAlpha = i / trail.length;
-        ctx.beginPath();
-        ctx.moveTo(trail[i - 1].x, trail[i - 1].y);
-        ctx.lineTo(trail[i].x, trail[i].y);
-        ctx.stroke();
-      }
-
-      ctx.globalAlpha = 0.5;
-      ctx.strokeStyle = fg;
-      ctx.lineWidth = 3;
+    ctx.strokeStyle = accent;
+    ctx.lineWidth = 2.5;
+    ctx.lineCap = "round";
+    for (let i = 1; i < trail.length; i++) {
+      ctx.globalAlpha = Math.max(0, 1 - (elapsed - trail[i].t) / TRAIL_MS);
       ctx.beginPath();
-      pts.forEach((p, i) => (i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)));
+      ctx.moveTo(trail[i - 1].x, trail[i - 1].y);
+      ctx.lineTo(trail[i].x, trail[i].y);
       ctx.stroke();
-      ctx.globalAlpha = 1;
+    }
 
-      if (elapsed < TRAIL_MS) {
-        requestAnimationFrame(frame);
-      } else {
-        canvas.hidden = true;
-        resolve();
-      }
-    };
-    requestAnimationFrame(frame);
-  });
+    ctx.globalAlpha = 0.5;
+    ctx.strokeStyle = fg;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    pts.forEach((p, i) => (i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)));
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+
+    idleTrailFrame = requestAnimationFrame(frame);
+  };
+  idleTrailFrame = requestAnimationFrame(frame);
+}
+
+function stopIdleTrail() {
+  if (idleTrailFrame !== null) cancelAnimationFrame(idleTrailFrame);
+  idleTrailFrame = null;
+  document.getElementById("trail-canvas").hidden = true;
 }
 
 const EXPORT_SCALE = 2;
@@ -561,6 +565,7 @@ function resetReading() {
   container.hidden = true;
   currentReading = null;
   document.getElementById("save-reading-button").hidden = true;
+  startIdleTrail();
 }
 
 function applyStaticUIText(lang) {
@@ -603,7 +608,7 @@ document.getElementById("draw-button").addEventListener("click", async () => {
   button.disabled = true;
   try {
     const spreadKey = document.getElementById("spread-select").value;
-    const [cards] = await Promise.all([loadDeck(), loadTranslations(), runTrailAnimation()]);
+    const [cards] = await Promise.all([loadDeck(), loadTranslations()]);
     renderSpread(drawSpread(cards, SPREADS[spreadKey].positionCount), spreadKey);
   } catch (err) {
     alert(
@@ -633,6 +638,7 @@ document.getElementById("language-select").addEventListener("change", (e) => {
 });
 
 (async function init() {
+  startIdleTrail();
   document.getElementById("language-select").value = currentLanguage;
   try {
     await loadTranslations();

@@ -448,7 +448,7 @@ button:disabled {
 
 .trail-canvas {
   display: block;
-  width: 360px;
+  width: 480px;
   max-width: 100%;
   height: auto;
   aspect-ratio: 3 / 2;
