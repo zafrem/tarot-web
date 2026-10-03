@@ -5,79 +5,13 @@
 
 const DECK_URL = "tarot-reader/src/data/deck.json";
 const IMAGES_BASE = "tarot-reader/src/data/";
-
-// Mirrors the spread shapes defined in tarot-reader's src/core.py
-// (draw_three / celtic_cross) — reimplemented here in JS since this app
-// never involves Python, only the submodule's portable deck.json.
-const SPREADS = {
-  single: {
-    positions: [null],
-  },
-  three: {
-    positions: [
-      {
-        label: "Past",
-        description: "What has led to the current situation.",
-      },
-      {
-        label: "Present",
-        description: "The heart of the matter right now.",
-      },
-      {
-        label: "Future",
-        description: "Where things are heading if the current path continues.",
-      },
-    ],
-  },
-  celtic: {
-    positions: [
-      {
-        label: "Present Situation",
-        description: "The heart of the matter — your current circumstances.",
-      },
-      {
-        label: "Challenge",
-        description: "What crosses you — the immediate obstacle or tension.",
-      },
-      {
-        label: "Distant Past/Foundation",
-        description: "The root cause or foundation this situation is built on.",
-      },
-      {
-        label: "Recent Past",
-        description: "What's recently passed or is now fading from influence.",
-      },
-      {
-        label: "Possible Outcome",
-        description: "A potential direction if things continue as they are.",
-      },
-      {
-        label: "Near Future",
-        description: "What's approaching next.",
-      },
-      {
-        label: "Your Approach",
-        description: "How you're approaching the situation.",
-      },
-      {
-        label: "External Influences",
-        description: "People, environment, and outside forces at play.",
-      },
-      {
-        label: "Hopes and Fears",
-        description: "What you hope for — or secretly fear.",
-      },
-      {
-        label: "Final Outcome",
-        description: "The likely culmination of the reading.",
-      },
-    ],
-  },
-};
-
-const FLIP_STAGGER_MS = 150;
+const TRANSLATIONS_URL = "i18n/translations.json";
+const SUPPORTED_LANGUAGES = ["en", "ko", "ja", "zh"];
+const LANGUAGE_STORAGE_KEY = "tarot-web-lang";
 
 let deck = null;
+let translations = null;
+let deckByName = null;
 
 async function loadDeck() {
   if (deck) return deck;
@@ -86,8 +20,53 @@ async function loadDeck() {
     throw new Error(`Failed to load deck.json: ${response.status}`);
   }
   deck = await response.json();
+  deckByName = Object.fromEntries(deck.map((c) => [c.name, c]));
   return deck;
 }
+
+async function loadTranslations() {
+  if (translations) return translations;
+  const response = await fetch(TRANSLATIONS_URL);
+  if (!response.ok) {
+    throw new Error(`Failed to load translations.json: ${response.status}`);
+  }
+  translations = await response.json();
+  return translations;
+}
+
+function loadSavedLanguage() {
+  try {
+    const saved = localStorage.getItem(LANGUAGE_STORAGE_KEY);
+    return SUPPORTED_LANGUAGES.includes(saved) ? saved : "en";
+  } catch (err) {
+    return "en";
+  }
+}
+
+function saveLanguage(lang) {
+  try {
+    localStorage.setItem(LANGUAGE_STORAGE_KEY, lang);
+  } catch (err) {
+    // Private browsing / blocked storage — language choice just won't
+    // persist across reloads. Not fatal.
+  }
+}
+
+let currentLanguage = loadSavedLanguage();
+
+// Mirrors the spread shapes defined in tarot-reader's src/core.py
+// (draw_three / celtic_cross) — reimplemented here in JS since this app
+// never involves Python, only the submodule's portable deck.json.
+// Structure only (position counts) — label/description text lives in
+// i18n/translations.json and is resolved at render time via resolvePosition.
+const SPREADS = {
+  single: { positionCount: 1 },
+  three: { positionCount: 3 },
+  celtic: { positionCount: 10 },
+};
+
+const FLIP_STAGGER_MS = 150;
+let currentReading = null; // { spreadKey, cards: [{englishName, orientation}] } | null
 
 function shuffle(cards) {
   const shuffled = cards.slice();
@@ -101,31 +80,58 @@ function shuffle(cards) {
 function drawOne(card) {
   const reversed = Math.random() < 0.5;
   return {
-    name: card.name,
+    englishName: card.name,
     orientation: reversed ? "Reversed" : "Upright",
-    meaning: reversed ? card.reversed : card.upright,
-    image: IMAGES_BASE + card.images.default,
   };
 }
 
-function drawSpread(cards, positions) {
-  const drawn = shuffle(cards).slice(0, positions.length);
+function drawSpread(cards, positionCount) {
+  const drawn = shuffle(cards).slice(0, positionCount);
   return drawn.map(drawOne);
 }
 
-function buildCardElement(card, position, index) {
+// Per-key fallback into the en translations block: used for every lookup
+// sourced from translations.json, so a language block that's missing an
+// individual key (not just missing entirely) still resolves instead of
+// throwing or rendering undefined. Card-object fields (name/upright/reversed)
+// already fall back per-field via card.translations and don't need this.
+function t(lang, path) {
+  const get = (obj) =>
+    path.split(".").reduce((o, k) => (o == null ? undefined : o[k]), obj);
+  return get(translations[lang]) ?? get(translations.en);
+}
+
+function resolveCardText(englishName, orientation, lang) {
+  const card = deckByName[englishName];
+  const translated = card.translations && card.translations[lang];
+  const name = (translated && translated.name) || card.name;
+  const meaning =
+    orientation === "Reversed"
+      ? (translated && translated.reversed) || card.reversed
+      : (translated && translated.upright) || card.upright;
+  const orientationLabel = t(lang, `orientation.${orientation}`);
+  return { name, meaning, orientationLabel };
+}
+
+function resolvePosition(spreadKey, index, lang) {
+  if (spreadKey === "single") return null;
+  const list = t(lang, `positions.${spreadKey}`);
+  return list[index];
+}
+
+function buildCardElement(englishName, orientation, index, spreadKey) {
   const wrapper = document.createElement("div");
   wrapper.className = `card pos-${index}`;
 
+  const position = resolvePosition(spreadKey, index, currentLanguage);
+  let label, description;
   if (position) {
-    const label = document.createElement("div");
+    label = document.createElement("div");
     label.className = "position";
-    label.textContent = position.label;
     wrapper.appendChild(label);
 
-    const description = document.createElement("div");
+    description = document.createElement("div");
     description.className = "position-description";
-    description.textContent = position.description;
     wrapper.appendChild(description);
   }
 
@@ -139,38 +145,58 @@ function buildCardElement(card, position, index) {
   front.className = "card-front";
 
   const img = document.createElement("img");
-  img.src = card.image;
-  img.alt = card.name;
   front.appendChild(img);
 
   const name = document.createElement("h2");
-  name.textContent = card.name;
   front.appendChild(name);
 
-  const orientation = document.createElement("p");
-  orientation.className = "card-orientation";
-  orientation.textContent = card.orientation;
-  front.appendChild(orientation);
+  const orientationEl = document.createElement("p");
+  orientationEl.className = "card-orientation";
+  front.appendChild(orientationEl);
 
   const meaning = document.createElement("p");
   meaning.className = "card-meaning";
-  meaning.textContent = card.meaning;
   front.appendChild(meaning);
 
   inner.appendChild(back);
   inner.appendChild(front);
   wrapper.appendChild(inner);
 
+  updateCardElementText(wrapper, englishName, orientation, index, spreadKey);
+
   return wrapper;
 }
 
-function renderSpread(cards, positions, spreadKey) {
+function updateCardElementText(wrapper, englishName, orientation, index, spreadKey) {
+  const card = deckByName[englishName];
+  const { name, meaning, orientationLabel } = resolveCardText(englishName, orientation, currentLanguage);
+  const position = resolvePosition(spreadKey, index, currentLanguage);
+
+  const posLabelEl = wrapper.querySelector(".position");
+  const posDescEl = wrapper.querySelector(".position-description");
+  if (position && posLabelEl && posDescEl) {
+    posLabelEl.textContent = position.label;
+    posDescEl.textContent = position.description;
+  }
+
+  wrapper.querySelector(".card-front img").src = IMAGES_BASE + card.images.default;
+  wrapper.querySelector(".card-front img").alt = name;
+  wrapper.querySelector(".card-front h2").textContent = name;
+  wrapper.querySelector(".card-orientation").textContent = orientationLabel;
+  wrapper.querySelector(".card-meaning").textContent = meaning;
+}
+
+function renderSpread(cards, spreadKey) {
   const container = document.getElementById("card-view");
   container.innerHTML = "";
   container.className = `card-view spread-${spreadKey}`;
   container.hidden = false;
 
-  const elements = cards.map((card, i) => buildCardElement(card, positions[i], i));
+  currentReading = { spreadKey, cards };
+
+  const elements = cards.map((card, i) =>
+    buildCardElement(card.englishName, card.orientation, i, spreadKey)
+  );
 
   // Celtic Cross: cards 0 (Present Situation) and 1 (Challenge) share one
   // grid cell by design (the "crossed" pair) — group them in their own
@@ -196,7 +222,39 @@ function resetReading() {
   const container = document.getElementById("card-view");
   container.innerHTML = "";
   container.hidden = true;
+  currentReading = null;
   document.getElementById("draw-button").hidden = false;
+}
+
+function applyStaticUIText(lang) {
+  // Keep <html lang> in sync so screen readers use correct pronunciation
+  // rules and browsers pick correct CJK font fallbacks for ko/ja/zh text.
+  document.documentElement.lang = lang;
+
+  document.getElementById("app-title").textContent = t(lang, "title");
+  document.getElementById("app-subtitle").textContent = t(lang, "subtitle");
+  document.getElementById("spread-select-label").textContent = t(lang, "spreadLabel");
+  document.getElementById("draw-button").textContent = t(lang, "draw");
+  document.getElementById("reset-button").textContent = t(lang, "reset");
+
+  const spreadSelect = document.getElementById("spread-select");
+  for (const option of spreadSelect.options) {
+    option.textContent = t(lang, `spreads.${option.value}`);
+  }
+}
+
+function applyLanguage(lang) {
+  currentLanguage = lang;
+  saveLanguage(lang);
+  applyStaticUIText(lang);
+
+  if (!currentReading) return;
+
+  const container = document.getElementById("card-view");
+  const cardEls = container.querySelectorAll(".card");
+  currentReading.cards.forEach((card, i) => {
+    updateCardElementText(cardEls[i], card.englishName, card.orientation, i, currentReading.spreadKey);
+  });
 }
 
 document.getElementById("draw-button").addEventListener("click", async () => {
@@ -204,9 +262,8 @@ document.getElementById("draw-button").addEventListener("click", async () => {
   button.disabled = true;
   try {
     const spreadKey = document.getElementById("spread-select").value;
-    const positions = SPREADS[spreadKey].positions;
-    const cards = await loadDeck();
-    renderSpread(drawSpread(cards, positions), positions, spreadKey);
+    const [cards] = await Promise.all([loadDeck(), loadTranslations()]);
+    renderSpread(drawSpread(cards, SPREADS[spreadKey].positionCount), spreadKey);
     button.hidden = true;
   } catch (err) {
     alert(
@@ -223,9 +280,16 @@ document.getElementById("draw-button").addEventListener("click", async () => {
 
 document.getElementById("reset-button").addEventListener("click", resetReading);
 
-// Placeholder only — real translation is a separate, not-yet-built effort.
-// This just remembers the choice; no UI or card text is translated yet.
-let currentLanguage = "en";
 document.getElementById("language-select").addEventListener("change", (e) => {
-  currentLanguage = e.target.value;
+  applyLanguage(e.target.value);
 });
+
+(async function init() {
+  document.getElementById("language-select").value = currentLanguage;
+  try {
+    await loadTranslations();
+    applyStaticUIText(currentLanguage);
+  } catch (err) {
+    console.error("Failed to load translations.json on startup:", err);
+  }
+})();
