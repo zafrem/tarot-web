@@ -257,7 +257,6 @@ function resetReading() {
   container.innerHTML = "";
   container.hidden = true;
   currentReading = null;
-  document.getElementById("draw-button").hidden = false;
 }
 
 function applyStaticUIText(lang) {
@@ -298,7 +297,6 @@ document.getElementById("draw-button").addEventListener("click", async () => {
     const spreadKey = document.getElementById("spread-select").value;
     const [cards] = await Promise.all([loadDeck(), loadTranslations()]);
     renderSpread(drawSpread(cards, SPREADS[spreadKey].positionCount), spreadKey);
-    button.hidden = true;
   } catch (err) {
     alert(
       "Could not load the tarot deck data. If you opened this file " +
