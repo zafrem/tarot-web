@@ -170,7 +170,7 @@ select {
     "left center right"
     ".    found  .";
   row-gap: 40px;
-  column-gap: 20px;
+  column-gap: 64px;
   align-items: center;
   justify-items: center;
 }
@@ -208,8 +208,6 @@ select {
 }
 
 .spread-celtic .pos-1 .card-front img {
-  width: 60px;
-  max-width: 60px;
   display: block;
   margin: -16px auto 8px;
   transform: rotate(90deg);
