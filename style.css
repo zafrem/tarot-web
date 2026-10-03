@@ -193,17 +193,26 @@ select {
   gap: 40px;
 }
 
-/* Card 1 (Challenge) displays upright, same as every other card -- no
-   rotation. A rotated "crossed card" look was tried, but rotating the
-   whole card visually swaps its width/height, and since its height is
-   content-driven (taller than it is wide), the rotated result was
-   wider than its column and bled into the neighboring card. Its label
-   and description still trail below the card instead of leading it
-   (see buildCardElement in app.js) -- margin-top on the wrapper gives
-   it some breathing room from Present Situation's card above, and
-   margin-top on its label separates it from its own card below. */
+/* Card 1 (Challenge): only its IMAGE rotates 90deg, not the whole card --
+   a small, fixed-size element whose rotated footprint is predictable,
+   unlike the card's text block (content-driven height, which is what
+   caused the earlier whole-card rotation to bleed into neighboring
+   cards). A small negative margin tucks it slightly closer to Present
+   Situation's card above, suggesting the traditional "crossed card"
+   look without true pixel overlap risk. Name/orientation/meaning text
+   stay unrotated and fully visible below it, as does its label and
+   description, which trail below the card instead of leading it (see
+   buildCardElement in app.js). */
 .spread-celtic .pos-1 {
   margin-top: 12px;
+}
+
+.spread-celtic .pos-1 .card-front img {
+  width: 60px;
+  max-width: 60px;
+  display: block;
+  margin: -16px auto 8px;
+  transform: rotate(90deg);
 }
 
 .spread-celtic .pos-1 .position {
