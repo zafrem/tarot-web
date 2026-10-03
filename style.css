@@ -193,27 +193,17 @@ select {
   gap: 40px;
 }
 
-/* Card 1 (Challenge): only its IMAGE rotates 90deg, not the whole card --
-   a small, fixed-size element whose rotated footprint is predictable,
-   unlike the card's text block (content-driven height, which is what
-   caused the earlier whole-card rotation to bleed into neighboring
-   cards). A small negative margin tucks it slightly closer to Present
-   Situation's card above, suggesting the traditional "crossed card"
-   look without true pixel overlap risk. Name/orientation/meaning text
-   stay unrotated and fully visible below it, as does its label and
-   description, which trail below the card instead of leading it (see
-   buildCardElement in app.js). */
-.spread-celtic .pos-1 {
-  margin-top: 12px;
-}
-
+/* Card 2 (Challenge): only its IMAGE rotates 90deg, not the whole card.
+   Its label and description sit above the card like every other
+   position; the rotated image uses no negative margin so it can't
+   reach up into that description. */
 .spread-celtic .pos-1 .card-front img {
   display: block;
-  margin: -16px auto 8px;
+  margin: 0 auto 8px;
   transform: rotate(90deg);
 }
 
-.spread-celtic .pos-1 .position {
+.position {
   margin-top: 10px;
 }
 
