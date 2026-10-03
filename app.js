@@ -283,18 +283,17 @@ function closeCardModal() {
 const TRAIL_MS = 3000;
 const TRAIL_W = 480;
 const TRAIL_H = 320;
-const TRAIL_LINKS = [120, 93, 67];
-const TRAIL_FREQ = [0.45, 0.7, 1.1];
-const TRAIL_AMP = [0.75, 0.6, 0.5];
+const TRAIL_LINKS = [64, 50, 36];
+const TRAIL_SPEED = [0.9, -1.4, 2.1];
 
-// Planar three-link arm: each joint swings sinusoidally; returns the joint
-// positions, base first, end effector last.
+// Planar three-link arm: each joint rotates continuously at its own angular
+// speed; returns the joint positions, base first, end effector last.
 function armPoints(ms, phases) {
   const sec = ms / 1000;
-  const pts = [{ x: TRAIL_W / 2, y: TRAIL_H - 20 }];
+  const pts = [{ x: TRAIL_W / 2, y: TRAIL_H / 2 }];
   let cumulative = 0;
   TRAIL_LINKS.forEach((length, i) => {
-    cumulative += TRAIL_AMP[i] * Math.sin(2 * Math.PI * TRAIL_FREQ[i] * sec + phases[i]);
+    cumulative += TRAIL_SPEED[i] * sec + phases[i];
     const prev = pts[pts.length - 1];
     pts.push({ x: prev.x + length * Math.sin(cumulative), y: prev.y - length * Math.cos(cumulative) });
   });
