@@ -125,13 +125,22 @@ select {
   align-items: center;
 }
 
+/* Each three-card column spans three shared rows (label, description,
+   card) via subgrid, so a longer description on one card can't push the
+   others' cards lower. */
 .spread-three {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-rows: auto auto auto;
+  grid-template-columns: repeat(3, minmax(0, 150px));
   justify-content: center;
-  align-items: flex-start;
-  gap: 16px;
+  column-gap: 16px;
+  align-items: start;
+}
+
+.spread-three .card {
+  grid-row: 1 / span 3;
+  display: grid;
+  grid-template-rows: subgrid;
 }
 
 .card {
