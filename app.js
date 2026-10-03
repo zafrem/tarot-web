@@ -279,6 +279,85 @@ function closeCardModal() {
   document.getElementById("card-modal").hidden = true;
 }
 
+const TRAIL_MS = 3000;
+const TRAIL_W = 360;
+const TRAIL_H = 240;
+const TRAIL_LINKS = [90, 70, 50];
+const TRAIL_FREQ = [0.45, 0.7, 1.1];
+const TRAIL_AMP = [0.75, 0.6, 0.5];
+
+// Planar three-link arm: each joint swings sinusoidally; returns the joint
+// positions, base first, end effector last.
+function armPoints(ms, phases) {
+  const sec = ms / 1000;
+  const pts = [{ x: TRAIL_W / 2, y: TRAIL_H - 16 }];
+  let cumulative = 0;
+  TRAIL_LINKS.forEach((length, i) => {
+    cumulative += TRAIL_AMP[i] * Math.sin(2 * Math.PI * TRAIL_FREQ[i] * sec + phases[i]);
+    const prev = pts[pts.length - 1];
+    pts.push({ x: prev.x + length * Math.sin(cumulative), y: prev.y - length * Math.cos(cumulative) });
+  });
+  return pts;
+}
+
+function runTrailAnimation() {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return Promise.resolve();
+
+  const canvas = document.getElementById("trail-canvas");
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = TRAIL_W * dpr;
+  canvas.height = TRAIL_H * dpr;
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  canvas.hidden = false;
+
+  const phases = TRAIL_LINKS.map(() => Math.random() * 2 * Math.PI);
+  const trail = [];
+  const bg = cssVar("--bg");
+  const fg = cssVar("--fg");
+  const accent = cssVar("--accent");
+
+  return new Promise((resolve) => {
+    const start = performance.now();
+    const frame = (now) => {
+      const elapsed = now - start;
+      const pts = armPoints(elapsed, phases);
+      trail.push(pts[pts.length - 1]);
+
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, TRAIL_W, TRAIL_H);
+
+      ctx.strokeStyle = accent;
+      ctx.lineWidth = 2;
+      ctx.lineCap = "round";
+      for (let i = 1; i < trail.length; i++) {
+        ctx.globalAlpha = i / trail.length;
+        ctx.beginPath();
+        ctx.moveTo(trail[i - 1].x, trail[i - 1].y);
+        ctx.lineTo(trail[i].x, trail[i].y);
+        ctx.stroke();
+      }
+
+      ctx.globalAlpha = 0.5;
+      ctx.strokeStyle = fg;
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      pts.forEach((p, i) => (i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)));
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+
+      if (elapsed < TRAIL_MS) {
+        requestAnimationFrame(frame);
+      } else {
+        canvas.hidden = true;
+        resolve();
+      }
+    };
+    requestAnimationFrame(frame);
+  });
+}
+
 const EXPORT_SCALE = 2;
 const EXPORT_CARD_W = 240;
 const EXPORT_IMAGE_H = 360;
@@ -524,7 +603,7 @@ document.getElementById("draw-button").addEventListener("click", async () => {
   button.disabled = true;
   try {
     const spreadKey = document.getElementById("spread-select").value;
-    const [cards] = await Promise.all([loadDeck(), loadTranslations()]);
+    const [cards] = await Promise.all([loadDeck(), loadTranslations(), runTrailAnimation()]);
     renderSpread(drawSpread(cards, SPREADS[spreadKey].positionCount), spreadKey);
   } catch (err) {
     alert(

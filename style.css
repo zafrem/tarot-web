@@ -445,3 +445,17 @@ button:disabled {
   margin-top: 16px;
 }
 
+
+.trail-canvas {
+  display: block;
+  width: 360px;
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;
+  margin: 8px auto 0;
+  border-radius: 8px;
+}
+
+.trail-canvas[hidden] {
+  display: none;
+}
