@@ -193,14 +193,25 @@ select {
   gap: 40px;
 }
 
-/* Card 1's own visual rotates (the "crossed" card); its label and
-   description stay upright, directly above it in the stack. */
+/* Card 1's own visual rotates (the "crossed" card). Its label and
+   description now trail below the card instead of leading it (see
+   buildCardElement in app.js) -- margin-top on the wrapper gives it some
+   breathing room from Present Situation's card above, and margin-top on
+   its label separates it from its own (rotated) card below. */
+.spread-celtic .pos-1 {
+  margin-top: 12px;
+}
+
 .spread-celtic .pos-1 .card-inner {
   transform: rotate(90deg);
 }
 
 .spread-celtic .pos-1.flipped .card-inner {
   transform: rotate(90deg) rotateY(180deg);
+}
+
+.spread-celtic .pos-1 .position {
+  margin-top: 10px;
 }
 
 .spread-celtic .pos-2 {

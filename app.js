@@ -128,11 +128,9 @@ function buildCardElement(englishName, orientation, index, spreadKey) {
   if (position) {
     label = document.createElement("div");
     label.className = "position";
-    wrapper.appendChild(label);
 
     description = document.createElement("div");
     description.className = "position-description";
-    wrapper.appendChild(description);
   }
 
   const inner = document.createElement("div");
@@ -160,7 +158,26 @@ function buildCardElement(englishName, orientation, index, spreadKey) {
 
   inner.appendChild(back);
   inner.appendChild(front);
-  wrapper.appendChild(inner);
+
+  // The Celtic Cross's Challenge card (index 1) sits directly beneath
+  // Present Situation in the center stack. Putting its label/description
+  // above it, like every other position, made the reading order
+  // label->card->label->card repeat right where the two crossed cards
+  // should read as a pair -- so for this one position the card comes
+  // first, with its own description trailing below instead of between
+  // the two cards.
+  const descriptionAfterCard = spreadKey === "celtic" && index === 1;
+  if (position && descriptionAfterCard) {
+    wrapper.appendChild(inner);
+    wrapper.appendChild(label);
+    wrapper.appendChild(description);
+  } else {
+    if (position) {
+      wrapper.appendChild(label);
+      wrapper.appendChild(description);
+    }
+    wrapper.appendChild(inner);
+  }
 
   updateCardElementText(wrapper, englishName, orientation, index, spreadKey);
 
