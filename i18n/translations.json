@@ -12,7 +12,6 @@
     "reset": "Reset",
     "saveReading": "Save reading",
     "saveCard": "Save card",
-    "locationPlaceholder": "Location (optional)",
     "orientation": { "Upright": "Upright", "Reversed": "Reversed" },
     "positions": {
       "three": [
@@ -47,7 +46,6 @@
     "reset": "초기화",
     "saveReading": "읽기 저장",
     "saveCard": "카드 저장",
-    "locationPlaceholder": "장소 (선택)",
     "orientation": { "Upright": "정방향", "Reversed": "역방향" },
     "positions": {
       "three": [
@@ -82,7 +80,6 @@
     "reset": "リセット",
     "saveReading": "リーディングを保存",
     "saveCard": "カードを保存",
-    "locationPlaceholder": "場所（任意）",
     "orientation": { "Upright": "正位置", "Reversed": "逆位置" },
     "positions": {
       "three": [
@@ -117,7 +114,6 @@
     "reset": "重置",
     "saveReading": "保存牌阵",
     "saveCard": "保存此牌",
-    "locationPlaceholder": "地点（可选）",
     "orientation": { "Upright": "正位", "Reversed": "逆位" },
     "positions": {
       "three": [

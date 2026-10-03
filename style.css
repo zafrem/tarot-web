@@ -445,14 +445,3 @@ button:disabled {
   margin-top: 16px;
 }
 
-.location-input {
-  display: block;
-  width: 100%;
-  margin: 0 0 12px;
-  padding: 8px 12px;
-  font-size: 0.95rem;
-  border-radius: 8px;
-  border: 1px solid color-mix(in srgb, var(--fg) 25%, transparent);
-  background: var(--bg);
-  color: var(--fg);
-}

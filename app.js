@@ -196,7 +196,7 @@ function renderSpread(cards, spreadKey) {
   container.className = `card-view spread-${spreadKey}`;
   container.hidden = false;
 
-  currentReading = { spreadKey, cards };
+  currentReading = { spreadKey, cards, drawnAt: new Date() };
 
   const elements = cards.map((card, i) =>
     buildCardElement(card.englishName, card.orientation, i, spreadKey)
@@ -455,11 +455,10 @@ async function exportCells(cells, filename) {
 const SPREAD_FILENAME_NAMES = { single: "Single Card", three: "Three-Card", celtic: "Celtic Cross" };
 
 function exportFilename(spreadKey, suffix) {
-  const location = document.getElementById("location-input").value.trim().replace(/[\\/:*?"<>|]/g, "");
-  const now = new Date();
+  const drawn = currentReading.drawnAt;
   const pad = (n) => String(n).padStart(2, "0");
-  const stamp = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}`;
-  return [SPREAD_FILENAME_NAMES[spreadKey], location, stamp, suffix].filter(Boolean).join("_") + ".png";
+  const stamp = `${drawn.getFullYear()}-${pad(drawn.getMonth() + 1)}-${pad(drawn.getDate())}_${pad(drawn.getHours())}${pad(drawn.getMinutes())}`;
+  return [SPREAD_FILENAME_NAMES[spreadKey], stamp, suffix].filter(Boolean).join("_") + ".png";
 }
 
 function saveReading() {
@@ -497,7 +496,6 @@ function applyStaticUIText(lang) {
   document.getElementById("reset-button").textContent = t(lang, "reset");
   document.getElementById("save-reading-button").textContent = t(lang, "saveReading");
   document.getElementById("card-modal-save").textContent = t(lang, "saveCard");
-  document.getElementById("location-input").placeholder = t(lang, "locationPlaceholder");
 
   const spreadSelect = document.getElementById("spread-select");
   for (const option of spreadSelect.options) {
