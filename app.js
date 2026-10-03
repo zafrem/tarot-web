@@ -67,6 +67,7 @@ const SPREADS = {
 
 const FLIP_STAGGER_MS = 150;
 let currentReading = null; // { spreadKey, cards: [{englishName, orientation}] } | null
+let modalIndex = null; // index into currentReading.cards while the pop-up is open
 
 function shuffle(cards) {
   const shuffled = cards.slice();
@@ -235,10 +236,50 @@ function renderSpread(cards, spreadKey) {
 
   elements.forEach((el, i) => {
     setTimeout(() => el.classList.add("flipped"), i * FLIP_STAGGER_MS);
+    el.addEventListener("click", () => openCardModal(i));
   });
 }
 
+function fillCardModal(index) {
+  const { spreadKey, cards } = currentReading;
+  const reading = cards[index];
+  const card = deckByName[reading.englishName];
+  const { name, meaning, orientationLabel } = resolveCardText(reading.englishName, reading.orientation, currentLanguage);
+  const position = resolvePosition(spreadKey, index, currentLanguage);
+
+  const image = document.getElementById("card-modal-image");
+  image.src = IMAGES_BASE + card.images.default;
+  image.alt = name;
+
+  document.getElementById("card-modal-name").textContent = name;
+  document.getElementById("card-modal-orientation").textContent = orientationLabel;
+  document.getElementById("card-modal-meaning").textContent = meaning;
+
+  const positionEl = document.getElementById("card-modal-position");
+  const positionDescEl = document.getElementById("card-modal-position-desc");
+  positionEl.hidden = !position;
+  positionDescEl.hidden = !position;
+  if (position) {
+    positionEl.textContent = position.label;
+    positionDescEl.textContent = position.description;
+  }
+}
+
+function openCardModal(index) {
+  modalIndex = index;
+  fillCardModal(index);
+  const modal = document.getElementById("card-modal");
+  modal.hidden = false;
+  document.getElementById("card-modal-close").focus();
+}
+
+function closeCardModal() {
+  modalIndex = null;
+  document.getElementById("card-modal").hidden = true;
+}
+
 function resetReading() {
+  closeCardModal();
   const container = document.getElementById("card-view");
   container.innerHTML = "";
   container.hidden = true;
@@ -269,6 +310,8 @@ function applyLanguage(lang) {
 
   if (!currentReading) return;
 
+  if (modalIndex !== null) fillCardModal(modalIndex);
+
   const container = document.getElementById("card-view");
   const cardEls = container.querySelectorAll(".card");
   currentReading.cards.forEach((card, i) => {
@@ -297,6 +340,12 @@ document.getElementById("draw-button").addEventListener("click", async () => {
 });
 
 document.getElementById("reset-button").addEventListener("click", resetReading);
+
+document.getElementById("card-modal-close").addEventListener("click", closeCardModal);
+document.querySelector("#card-modal .card-modal-backdrop").addEventListener("click", closeCardModal);
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && modalIndex !== null) closeCardModal();
+});
 
 document.getElementById("language-select").addEventListener("change", (e) => {
   applyLanguage(e.target.value);

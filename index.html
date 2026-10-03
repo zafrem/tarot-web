@@ -34,6 +34,21 @@
     <section id="card-view" class="card-view" hidden></section>
   </main>
 
+  <div id="card-modal" class="card-modal" hidden>
+    <div class="card-modal-backdrop" data-close></div>
+    <div class="card-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="card-modal-name">
+      <button id="card-modal-close" class="card-modal-close" aria-label="Close">&times;</button>
+      <img id="card-modal-image" class="card-modal-image" alt="" />
+      <div class="card-modal-text">
+        <p id="card-modal-position" class="card-modal-position"></p>
+        <p id="card-modal-position-desc" class="card-modal-position-desc"></p>
+        <h2 id="card-modal-name"></h2>
+        <p id="card-modal-orientation" class="card-modal-orientation"></p>
+        <p id="card-modal-meaning" class="card-modal-meaning"></p>
+      </div>
+    </div>
+  </div>
+
   <script src="app.js"></script>
 </body>
 </html>
