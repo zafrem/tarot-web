@@ -90,25 +90,32 @@ function drawSpread(cards, positionCount) {
   return drawn.map(drawOne);
 }
 
+// Per-key fallback into the en translations block: used for every lookup
+// sourced from translations.json, so a language block that's missing an
+// individual key (not just missing entirely) still resolves instead of
+// throwing or rendering undefined. Card-object fields (name/upright/reversed)
+// already fall back per-field via card.translations and don't need this.
+function t(lang, path) {
+  const get = (obj) =>
+    path.split(".").reduce((o, k) => (o == null ? undefined : o[k]), obj);
+  return get(translations[lang]) ?? get(translations.en);
+}
+
 function resolveCardText(englishName, orientation, lang) {
   const card = deckByName[englishName];
-  const t = card.translations && card.translations[lang];
-  const name = (t && t.name) || card.name;
+  const translated = card.translations && card.translations[lang];
+  const name = (translated && translated.name) || card.name;
   const meaning =
     orientation === "Reversed"
-      ? (t && t.reversed) || card.reversed
-      : (t && t.upright) || card.upright;
-  const orientationLabel =
-    (translations[lang] && translations[lang].orientation[orientation]) ||
-    translations.en.orientation[orientation];
+      ? (translated && translated.reversed) || card.reversed
+      : (translated && translated.upright) || card.upright;
+  const orientationLabel = t(lang, `orientation.${orientation}`);
   return { name, meaning, orientationLabel };
 }
 
 function resolvePosition(spreadKey, index, lang) {
   if (spreadKey === "single") return null;
-  const list =
-    (translations[lang] && translations[lang].positions[spreadKey]) ||
-    translations.en.positions[spreadKey];
+  const list = t(lang, `positions.${spreadKey}`);
   return list[index];
 }
 
@@ -220,16 +227,19 @@ function resetReading() {
 }
 
 function applyStaticUIText(lang) {
-  const t = translations[lang] || translations.en;
-  document.getElementById("app-title").textContent = t.title;
-  document.getElementById("app-subtitle").textContent = t.subtitle;
-  document.getElementById("spread-select-label").textContent = t.spreadLabel;
-  document.getElementById("draw-button").textContent = t.draw;
-  document.getElementById("reset-button").textContent = t.reset;
+  // Keep <html lang> in sync so screen readers use correct pronunciation
+  // rules and browsers pick correct CJK font fallbacks for ko/ja/zh text.
+  document.documentElement.lang = lang;
+
+  document.getElementById("app-title").textContent = t(lang, "title");
+  document.getElementById("app-subtitle").textContent = t(lang, "subtitle");
+  document.getElementById("spread-select-label").textContent = t(lang, "spreadLabel");
+  document.getElementById("draw-button").textContent = t(lang, "draw");
+  document.getElementById("reset-button").textContent = t(lang, "reset");
 
   const spreadSelect = document.getElementById("spread-select");
   for (const option of spreadSelect.options) {
-    option.textContent = t.spreads[option.value];
+    option.textContent = t(lang, `spreads.${option.value}`);
   }
 }
 
