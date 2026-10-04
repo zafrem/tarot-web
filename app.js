@@ -1,10 +1,10 @@
-// Reads card data directly from the tarot-reader submodule's portable
+// Reads card data directly from the tarot-data submodule's portable
 // dataset (src/data/deck.json + src/data/images/). No Python involved —
 // this is exactly the "native client reads the data directly" case that
 // dataset was built for.
 
-const DECK_URL = "tarot-reader/src/data/deck.json";
-const IMAGES_BASE = "tarot-reader/src/data/";
+const DECK_URL = "tarot-data/src/data/deck.json";
+const IMAGES_BASE = "tarot-data/src/data/";
 const TRANSLATIONS_URL = "i18n/translations.json";
 const SUPPORTED_LANGUAGES = ["en", "ko", "ja", "zh"];
 const LANGUAGE_STORAGE_KEY = "tarot-web-lang";
@@ -54,7 +54,7 @@ function saveLanguage(lang) {
 
 let currentLanguage = loadSavedLanguage();
 
-// Mirrors the spread shapes defined in tarot-reader's src/core.py
+// Mirrors the spread shapes defined in tarot-data's src/core.py
 // (draw_three / celtic_cross) — reimplemented here in JS since this app
 // never involves Python, only the submodule's portable deck.json.
 // Structure only (position counts) — label/description text lives in

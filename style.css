@@ -157,7 +157,7 @@ select {
    4-card staff are two independent layout containers (see renderSpread
    in app.js), not one shared grid — so the staff's spacing never
    depends on the cross's tallest row (the center card-stack). Position
-   indices match tarot-reader's celtic_cross() order. */
+   indices match tarot-data's celtic_cross() order. */
 .spread-celtic {
   display: flex;
   flex-wrap: wrap;

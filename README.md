@@ -5,8 +5,8 @@ your own machine, or visited live at
 [zafrem.github.io/tarot-web](https://zafrem.github.io/tarot-web/).
 
 Card data (78 cards, meanings, and public-domain Rider-Waite-Smith images)
-comes from the [tarot-reader](https://github.com/zafrem/tarot-reader) repo,
-included here as a git submodule. This app reads `tarot-reader/src/data/`
+comes from the [tarot-data](https://github.com/zafrem/tarot-data) repo,
+included here as a git submodule. This app reads `tarot-data/src/data/`
 directly — no Python, no server-side calls into that repo.
 
 ## Setup
@@ -28,11 +28,11 @@ python3 -m http.server 8000
 ## Updating the card data
 
 ```bash
-cd tarot-reader
+cd tarot-data
 git pull origin main
 cd ..
-git add tarot-reader
-git commit -m "Update tarot-reader submodule"
+git add tarot-data
+git commit -m "Update tarot-data submodule"
 ```
 
 ## Deployment
@@ -41,7 +41,7 @@ Pushes to `main` auto-deploy to GitHub Pages via
 [`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml).
 That workflow checks out with `submodules: recursive` before deploying —
 GitHub Pages' default "deploy from a branch" source does not initialize
-submodules, which would otherwise leave `tarot-reader/` empty on the live
+submodules, which would otherwise leave `tarot-data/` empty on the live
 site and break the deck data fetch.
 
 ---
