@@ -462,15 +462,17 @@ button:disabled {
 
 .site-footer {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 8px 16px;
   width: 100%;
-  padding: 16px 24px;
+  padding: 16px;
 }
 
 .site-footer img {
-  height: 40px;
+  display: block;
+  height: 28px;
   width: auto;
 }
 
