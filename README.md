@@ -1,7 +1,5 @@
 # Tarot (Web)
 
-[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/zafrem)
-
 A local, browser-based tarot reading app — used like a desktop app, run on
 your own machine, or visited live at
 [zafrem.github.io/tarot-web](https://zafrem.github.io/tarot-web/).
@@ -45,3 +43,8 @@ That workflow checks out with `submodules: recursive` before deploying —
 GitHub Pages' default "deploy from a branch" source does not initialize
 submodules, which would otherwise leave `tarot-reader/` empty on the live
 site and break the deck data fetch.
+
+---
+
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/zafrem)
+
