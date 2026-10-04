@@ -459,3 +459,13 @@ button:disabled {
 .trail-canvas[hidden] {
   display: none;
 }
+
+.site-footer {
+  padding: 16px;
+  text-align: center;
+}
+
+.site-footer img {
+  height: 40px;
+  width: auto;
+}
