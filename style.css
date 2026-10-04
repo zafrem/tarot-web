@@ -469,3 +469,9 @@ button:disabled {
   height: 40px;
   width: auto;
 }
+
+.site-footer-credit {
+  margin: 8px 0 0;
+  font-size: 0.85rem;
+  opacity: 0.7;
+}

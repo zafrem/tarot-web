@@ -646,3 +646,5 @@ document.getElementById("language-select").addEventListener("change", (e) => {
     console.error("Failed to load translations.json on startup:", err);
   }
 })();
+
+document.getElementById("footer-year").textContent = new Date().getFullYear();
