@@ -2,14 +2,14 @@
   color-scheme: light dark;
   --fg: #1a1a1a;
   --bg: #faf7f2;
-  --accent: #1e092a;
+  --accent: #160620;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --fg: #ece9e4;
     --bg: #17141c;
-    --accent: #a081ca;
+    --accent: #8f6bbd;
   }
 }
 

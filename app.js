@@ -756,7 +756,7 @@ function initCrystalBall() {
     const cx = SIZE / 2;
     const cy = SIZE / 2;
     const r = SIZE / 2;
-    const rotation = reduced ? 0 : now * 0.00025;
+    const rotation = reduced ? 0 : now * -0.00025;
 
     ctx.clearRect(0, 0, SIZE, SIZE);
 
