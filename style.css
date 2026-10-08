@@ -481,3 +481,17 @@ button:disabled {
   font-size: 0.85rem;
   opacity: 0.7;
 }
+
+.starfield {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  .starfield {
+    display: block;
+  }
+}

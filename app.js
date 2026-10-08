@@ -648,3 +648,81 @@ document.getElementById("language-select").addEventListener("change", (e) => {
 })();
 
 document.getElementById("footer-year").textContent = new Date().getFullYear();
+
+function initStarfield() {
+  const canvas = document.getElementById("starfield-canvas");
+  if (!canvas || !canvas.getContext) return;
+  const ctx = canvas.getContext("2d");
+  const darkQuery = window.matchMedia("(prefers-color-scheme: dark)");
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let stars = [];
+  let raf = null;
+
+  function resize() {
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = window.innerWidth * dpr;
+    canvas.height = window.innerHeight * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  function seedStars() {
+    const density = (window.innerWidth * window.innerHeight) / 9000;
+    const count = Math.round(Math.min(220, Math.max(60, density)));
+    stars = Array.from({ length: count }, () => ({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      r: Math.random() * 1.1 + 0.3,
+      baseAlpha: Math.random() * 0.5 + 0.3,
+      twinkleSpeed: Math.random() * 0.0015 + 0.0005,
+      phase: Math.random() * Math.PI * 2,
+      vx: (Math.random() - 0.5) * 0.015,
+      vy: (Math.random() - 0.5) * 0.015,
+    }));
+  }
+
+  function drawFrame(now) {
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    ctx.clearRect(0, 0, w, h);
+    for (const s of stars) {
+      if (!reduced) {
+        s.x = (s.x + s.vx + w) % w;
+        s.y = (s.y + s.vy + h) % h;
+      }
+      const alpha = reduced ? s.baseAlpha : s.baseAlpha + Math.sin(now * s.twinkleSpeed + s.phase) * 0.25;
+      ctx.globalAlpha = Math.max(0, Math.min(1, alpha));
+      ctx.fillStyle = "#ffffff";
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    raf = reduced ? null : requestAnimationFrame(drawFrame);
+  }
+
+  function start() {
+    if (raf !== null) return;
+    resize();
+    seedStars();
+    raf = requestAnimationFrame(drawFrame);
+  }
+
+  function stop() {
+    if (raf !== null) cancelAnimationFrame(raf);
+    raf = null;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+
+  function sync() {
+    if (darkQuery.matches) start();
+    else stop();
+  }
+
+  window.addEventListener("resize", () => {
+    if (darkQuery.matches) resize();
+  });
+  darkQuery.addEventListener("change", sync);
+  sync();
+}
+
+initStarfield();
