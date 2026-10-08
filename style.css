@@ -34,7 +34,7 @@ body {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: 12px;
   padding: 10px 16px;
   border-bottom: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
@@ -529,4 +529,18 @@ button:disabled {
   .card-modal-image {
     width: 160px;
   }
+}
+
+.top-bar-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.crystal-ball {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 50%;
 }

@@ -726,3 +726,89 @@ function initStarfield() {
 }
 
 initStarfield();
+
+function initCrystalBall() {
+  const canvas = document.getElementById("crystal-ball-canvas");
+  if (!canvas || !canvas.getContext) return;
+  const ctx = canvas.getContext("2d");
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const SIZE = 36;
+  const ARMS = 3;
+  const STAR_COUNT = 48;
+
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = SIZE * dpr;
+  canvas.height = SIZE * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  const stars = Array.from({ length: STAR_COUNT }, (_, i) => {
+    const arm = i % ARMS;
+    const t = (Math.floor(i / ARMS) + Math.random() * 0.6) / Math.ceil(STAR_COUNT / ARMS);
+    return {
+      radius: Math.sqrt(t) * (SIZE * 0.42),
+      angle: arm * ((Math.PI * 2) / ARMS) + t * 4.2,
+      size: Math.random() * 0.7 + 0.3,
+      alpha: 1 - t * 0.6,
+    };
+  });
+
+  function drawFrame(now) {
+    const cx = SIZE / 2;
+    const cy = SIZE / 2;
+    const r = SIZE / 2;
+    const rotation = reduced ? 0 : now * 0.00025;
+
+    ctx.clearRect(0, 0, SIZE, SIZE);
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.clip();
+
+    const sphere = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+    sphere.addColorStop(0, "#1a1033");
+    sphere.addColorStop(1, "#05030a");
+    ctx.fillStyle = sphere;
+    ctx.fillRect(0, 0, SIZE, SIZE);
+
+    ctx.fillStyle = "#e8d9ff";
+    ctx.globalAlpha = 0.9;
+    ctx.beginPath();
+    ctx.arc(cx, cy, 1.6, 0, Math.PI * 2);
+    ctx.fill();
+
+    for (const star of stars) {
+      const angle = star.angle + rotation;
+      const x = cx + star.radius * Math.cos(angle);
+      const y = cy + star.radius * Math.sin(angle);
+      ctx.globalAlpha = star.alpha;
+      ctx.fillStyle = "#ffffff";
+      ctx.beginPath();
+      ctx.arc(x, y, star.size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    ctx.restore();
+
+    const glass = ctx.createRadialGradient(cx - r * 0.35, cy - r * 0.4, 0, cx, cy, r);
+    glass.addColorStop(0, "rgba(255, 255, 255, 0.35)");
+    glass.addColorStop(0.35, "rgba(255, 255, 255, 0.06)");
+    glass.addColorStop(1, "rgba(255, 255, 255, 0)");
+    ctx.fillStyle = glass;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.25)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r - 0.5, 0, Math.PI * 2);
+    ctx.stroke();
+
+    if (!reduced) requestAnimationFrame(drawFrame);
+  }
+
+  requestAnimationFrame(drawFrame);
+}
+
+initCrystalBall();
