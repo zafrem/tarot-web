@@ -2,7 +2,7 @@
   color-scheme: light dark;
   --fg: #1a1a1a;
   --bg: #faf7f2;
-  --accent: #5b3688;
+  --accent: #1e092a;
 }
 
 @media (prefers-color-scheme: dark) {
