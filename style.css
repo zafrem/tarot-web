@@ -23,6 +23,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow-x: hidden;
   background: var(--bg);
   color: var(--fg);
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -31,6 +32,7 @@ body {
 .top-bar {
   width: 100%;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: flex-end;
   gap: 12px;
@@ -498,5 +500,38 @@ button:disabled {
 @media (prefers-color-scheme: dark) {
   .starfield {
     display: block;
+  }
+}
+
+@media (max-width: 600px) {
+  main {
+    padding: 16px 12px;
+  }
+
+  .spread-celtic {
+    gap: 16px;
+  }
+
+  .celtic-cross-grid {
+    grid-template-columns: repeat(3, minmax(64px, 1fr));
+    column-gap: 16px;
+    row-gap: 28px;
+  }
+
+  .spread-celtic .card {
+    max-width: 84px;
+  }
+
+  .spread-celtic .card-inner {
+    min-height: 150px;
+  }
+
+  .card-modal-dialog {
+    padding: 28px 16px 16px;
+    gap: 16px;
+  }
+
+  .card-modal-image {
+    width: 160px;
   }
 }
