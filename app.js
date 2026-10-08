@@ -673,10 +673,10 @@ function initStarfield() {
       y: Math.random() * window.innerHeight,
       r: Math.random() * 1.1 + 0.3,
       baseAlpha: Math.random() * 0.5 + 0.3,
-      twinkleSpeed: Math.random() * 0.0015 + 0.0005,
+      twinkleSpeed: Math.random() * 0.004 + 0.0012,
       phase: Math.random() * Math.PI * 2,
-      vx: (Math.random() - 0.5) * 0.015,
-      vy: (Math.random() - 0.5) * 0.015,
+      vx: (Math.random() - 0.5) * 0.08,
+      vy: (Math.random() - 0.5) * 0.08,
     }));
   }
 
