@@ -5,7 +5,7 @@
     "spreadLabel": "Spread",
     "spreads": {
       "single": "Single Card",
-      "three": "Three-Card (Past / Present / Future)",
+      "three": "Three-Card",
       "celtic": "Celtic Cross"
     },
     "draw": "Draw",
@@ -39,7 +39,7 @@
     "spreadLabel": "스프레드",
     "spreads": {
       "single": "한 장 뽑기",
-      "three": "쓰리 카드 (과거 / 현재 / 미래)",
+      "three": "쓰리 카드",
       "celtic": "켈틱 크로스"
     },
     "draw": "뽑기",
@@ -73,7 +73,7 @@
     "spreadLabel": "スプレッド",
     "spreads": {
       "single": "ワンカード",
-      "three": "スリーカード（過去 / 現在 / 未来）",
+      "three": "スリーカード",
       "celtic": "ケルト十字"
     },
     "draw": "引く",
@@ -107,7 +107,7 @@
     "spreadLabel": "牌阵",
     "spreads": {
       "single": "单张牌",
-      "three": "三张牌（过去 / 现在 / 未来）",
+      "three": "三张牌",
       "celtic": "凯尔特十字"
     },
     "draw": "抽牌",

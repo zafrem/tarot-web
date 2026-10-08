@@ -88,13 +88,6 @@ main {
   line-height: 1.2;
 }
 
-.spread-label {
-  display: block;
-  margin-bottom: 4px;
-  font-size: 0.85em;
-  opacity: 0.7;
-}
-
 select {
   width: 100%;
   padding: 8px 12px;
@@ -106,27 +99,42 @@ select {
   color: var(--fg);
 }
 
-/* Spread dropdown and Draw button share one row, button to the right. */
+/* Spread picker and Draw button share one row, button to the right. */
 .spread-row {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 10px;
   width: 100%;
   margin-bottom: 16px;
 }
 
-.spread-row .spread-label {
-  flex-shrink: 0;
-  margin-bottom: 0;
-}
-
-.spread-row select {
+.spread-options {
+  display: flex;
   flex: 1;
-  width: auto;
-  margin-bottom: 0;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
 }
 
-.spread-row button {
+.spread-option {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 10px;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  background: transparent;
+  color: var(--fg);
+  border: 1px solid color-mix(in srgb, var(--fg) 25%, transparent);
+}
+
+.spread-option.is-selected {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+.spread-row button#draw-button {
   flex-shrink: 0;
   padding: 8px 16px;
 }

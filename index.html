@@ -29,12 +29,11 @@
 
   <main>
     <div class="spread-row">
-      <label for="spread-select" id="spread-select-label" class="spread-label">Spread</label>
-      <select id="spread-select">
-        <option value="single">Single Card</option>
-        <option value="three">Three-Card (Past / Present / Future)</option>
-        <option value="celtic">Celtic Cross</option>
-      </select>
+      <div id="spread-options" class="spread-options" role="group" aria-label="Spread">
+        <button type="button" class="spread-option is-selected" data-spread="single">Single Card</button>
+        <button type="button" class="spread-option" data-spread="three">Three-Card</button>
+        <button type="button" class="spread-option" data-spread="celtic">Celtic Cross</button>
+      </div>
       <button id="draw-button">Draw</button>
     </div>
 

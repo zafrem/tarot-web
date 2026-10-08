@@ -53,6 +53,7 @@ function saveLanguage(lang) {
 }
 
 let currentLanguage = loadSavedLanguage();
+let currentSpreadKey = "single";
 
 // Mirrors the spread shapes defined in tarot-data's src/core.py
 // (draw_three / celtic_cross) — reimplemented here in JS since this app
@@ -574,15 +575,13 @@ function applyStaticUIText(lang) {
 
   document.getElementById("app-title").textContent = t(lang, "title");
   document.getElementById("app-subtitle").textContent = t(lang, "subtitle");
-  document.getElementById("spread-select-label").textContent = t(lang, "spreadLabel");
   document.getElementById("draw-button").textContent = t(lang, "draw");
   document.getElementById("reset-button").textContent = t(lang, "reset");
   document.getElementById("save-reading-button").textContent = t(lang, "saveReading");
   document.getElementById("card-modal-save").textContent = t(lang, "saveCard");
 
-  const spreadSelect = document.getElementById("spread-select");
-  for (const option of spreadSelect.options) {
-    option.textContent = t(lang, `spreads.${option.value}`);
+  for (const btn of document.querySelectorAll(".spread-option")) {
+    btn.textContent = t(lang, `spreads.${btn.dataset.spread}`);
   }
 }
 
@@ -606,7 +605,7 @@ document.getElementById("draw-button").addEventListener("click", async () => {
   const button = document.getElementById("draw-button");
   button.disabled = true;
   try {
-    const spreadKey = document.getElementById("spread-select").value;
+    const spreadKey = currentSpreadKey;
     const [cards] = await Promise.all([loadDeck(), loadTranslations()]);
     renderSpread(drawSpread(cards, SPREADS[spreadKey].positionCount), spreadKey);
   } catch (err) {
@@ -623,6 +622,15 @@ document.getElementById("draw-button").addEventListener("click", async () => {
 });
 
 document.getElementById("reset-button").addEventListener("click", resetReading);
+
+for (const btn of document.querySelectorAll(".spread-option")) {
+  btn.addEventListener("click", () => {
+    currentSpreadKey = btn.dataset.spread;
+    document
+      .querySelectorAll(".spread-option")
+      .forEach((b) => b.classList.toggle("is-selected", b === btn));
+  });
+}
 
 document.getElementById("card-modal-close").addEventListener("click", closeCardModal);
 document.getElementById("card-modal-save").addEventListener("click", saveCard);
