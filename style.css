@@ -52,11 +52,6 @@ body {
   font-size: 0.9rem;
 }
 
-#reset-button {
-  background: #000;
-  color: #e5e5e5;
-}
-
 main {
   width: 100%;
   max-width: 640px;
@@ -341,8 +336,8 @@ button {
   font-size: 1rem;
   border: none;
   border-radius: 8px;
-  background: var(--accent);
-  color: white;
+  background: #000;
+  color: #e5e5e5;
   cursor: pointer;
 }
 
