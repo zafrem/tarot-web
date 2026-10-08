@@ -2,14 +2,14 @@
   color-scheme: light dark;
   --fg: #1a1a1a;
   --bg: #faf7f2;
-  --accent: #6b3fa0;
+  --accent: #5b3688;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --fg: #ece9e4;
     --bg: #17141c;
-    --accent: #b28fe0;
+    --accent: #a081ca;
   }
 }
 
@@ -336,8 +336,8 @@ button {
   font-size: 1rem;
   border: none;
   border-radius: 8px;
-  background: #000;
-  color: #e5e5e5;
+  background: var(--accent);
+  color: white;
   cursor: pointer;
 }
 
