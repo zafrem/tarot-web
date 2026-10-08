@@ -55,7 +55,7 @@ body {
 main {
   width: 100%;
   max-width: 640px;
-  padding: 24px;
+  padding: 24px 24px 88px;
   text-align: center;
   flex: 1;
   display: flex;
@@ -63,14 +63,29 @@ main {
   align-items: center;
 }
 
-h1 {
-  margin-bottom: 0;
+.top-bar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
 }
 
-.subtitle {
-  margin-top: 4px;
+.top-bar-titles {
+  min-width: 0;
+  text-align: left;
+}
+
+.top-bar h1 {
+  margin: 0;
+  font-size: 1.1rem;
+  line-height: 1.2;
+}
+
+.top-bar .subtitle {
+  margin: 0;
   opacity: 0.7;
-  font-size: 0.9em;
+  font-size: 0.7rem;
+  line-height: 1.2;
 }
 
 .spread-label {
@@ -463,6 +478,11 @@ button:disabled {
 }
 
 .site-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 5;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -470,6 +490,8 @@ button:disabled {
   gap: 8px 16px;
   width: 100%;
   padding: 16px;
+  background: var(--bg);
+  border-top: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
 }
 
 .site-footer img {
@@ -500,7 +522,7 @@ button:disabled {
 
 @media (max-width: 600px) {
   main {
-    padding: 16px 12px;
+    padding: 16px 12px 96px;
   }
 
   .spread-celtic {

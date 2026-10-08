@@ -9,7 +9,13 @@
 <body>
   <canvas id="starfield-canvas" class="starfield" aria-hidden="true"></canvas>
   <header class="top-bar">
-    <canvas id="crystal-ball-canvas" class="crystal-ball" aria-hidden="true"></canvas>
+    <div class="top-bar-brand">
+      <canvas id="crystal-ball-canvas" class="crystal-ball" aria-hidden="true"></canvas>
+      <div class="top-bar-titles">
+        <h1 id="app-title">Tarot Web</h1>
+        <p id="app-subtitle" class="subtitle">For entertainment purposes only.</p>
+      </div>
+    </div>
     <div class="top-bar-controls">
       <select id="language-select" aria-label="Language">
         <option value="en">English</option>
@@ -22,9 +28,6 @@
   </header>
 
   <main>
-    <h1 id="app-title">Tarot Web</h1>
-    <p id="app-subtitle" class="subtitle">For entertainment purposes only.</p>
-
     <div class="spread-row">
       <label for="spread-select" id="spread-select-label" class="spread-label">Spread</label>
       <select id="spread-select">
