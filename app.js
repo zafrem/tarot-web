@@ -66,7 +66,6 @@ const SPREADS = {
   celtic: { positionCount: 10 },
 };
 
-const FLIP_STAGGER_MS = 150;
 let currentReading = null; // { spreadKey, cards: [{englishName, orientation}] } | null
 let modalIndex = null; // index into currentReading.cards while the pop-up is open
 
@@ -236,9 +235,16 @@ function renderSpread(cards, spreadKey) {
     elements.forEach((el) => container.appendChild(el));
   }
 
+  // Cards start face-down. The first click flips a card to reveal it;
+  // clicking an already-revealed card opens the enlarged pop-up instead.
   elements.forEach((el, i) => {
-    setTimeout(() => el.classList.add("flipped"), i * FLIP_STAGGER_MS);
-    el.addEventListener("click", () => openCardModal(i));
+    el.addEventListener("click", () => {
+      if (el.classList.contains("flipped")) {
+        openCardModal(i);
+      } else {
+        el.classList.add("flipped");
+      }
+    });
   });
   document.getElementById("save-reading-button").hidden = false;
 }
@@ -565,6 +571,7 @@ function resetReading() {
   container.hidden = true;
   currentReading = null;
   document.getElementById("save-reading-button").hidden = true;
+  document.querySelectorAll(".spread-option").forEach((b) => (b.disabled = false));
   startIdleTrail();
 }
 
@@ -575,7 +582,6 @@ function applyStaticUIText(lang) {
 
   document.getElementById("app-title").textContent = t(lang, "title");
   document.getElementById("app-subtitle").textContent = t(lang, "subtitle");
-  document.getElementById("draw-button").textContent = t(lang, "draw");
   document.getElementById("reset-button").textContent = t(lang, "reset");
   document.getElementById("save-reading-button").textContent = t(lang, "saveReading");
   document.getElementById("card-modal-save").textContent = t(lang, "saveCard");
@@ -601,11 +607,15 @@ function applyLanguage(lang) {
   });
 }
 
-document.getElementById("draw-button").addEventListener("click", async () => {
-  const button = document.getElementById("draw-button");
-  button.disabled = true;
+// Clicking a spread button both selects and immediately draws that spread;
+// there is no separate Draw step. All three buttons disable once a draw
+// succeeds, so a reading can only be replaced via Reset -- not by clicking
+// a spread button again. On a failed draw (e.g. deck fetch error), they
+// re-enable so the user can retry.
+async function performDraw(spreadKey) {
+  const buttons = document.querySelectorAll(".spread-option");
+  buttons.forEach((b) => (b.disabled = true));
   try {
-    const spreadKey = currentSpreadKey;
     const [cards] = await Promise.all([loadDeck(), loadTranslations()]);
     renderSpread(drawSpread(cards, SPREADS[spreadKey].positionCount), spreadKey);
   } catch (err) {
@@ -616,10 +626,9 @@ document.getElementById("draw-button").addEventListener("click", async () => {
         "local files over file://."
     );
     console.error(err);
-  } finally {
-    button.disabled = false;
+    buttons.forEach((b) => (b.disabled = false));
   }
-});
+}
 
 document.getElementById("reset-button").addEventListener("click", resetReading);
 
@@ -629,6 +638,7 @@ for (const btn of document.querySelectorAll(".spread-option")) {
     document
       .querySelectorAll(".spread-option")
       .forEach((b) => b.classList.toggle("is-selected", b === btn));
+    performDraw(currentSpreadKey);
   });
 }
 
