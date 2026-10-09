@@ -285,19 +285,34 @@ select {
   max-height: 200px;
 }
 
+/* Before a card is flipped, only the back (no text) is visible, so its
+   height follows a fixed card-like proportion regardless of how long the
+   front's hidden meaning text is -- the two faces share one box (needed
+   for the 3D flip), so without this, a card with a longer meaning made
+   the back look oversized too, even though the back has no content that
+   needs the room. The front's own content can still overflow this box
+   while hidden, since backface-visibility hides the overflow along with
+   the rest of the face. Once .flipped is added, the box switches to the
+   old content-driven sizing (a min-height floor, content can grow it
+   taller), so revealed text still never clips. */
 .card-inner {
   position: relative;
   width: 100%;
-  min-height: 320px;
+  aspect-ratio: 2 / 3;
   transition: transform 0.6s;
   transform-style: preserve-3d;
 }
 
-.spread-three .card-inner {
+.card.flipped .card-inner {
+  aspect-ratio: auto;
+  min-height: 320px;
+}
+
+.spread-three .card.flipped .card-inner {
   min-height: 230px;
 }
 
-.spread-celtic .card-inner {
+.spread-celtic .card.flipped .card-inner {
   min-height: 170px;
 }
 
@@ -562,7 +577,7 @@ button:disabled {
     max-width: 84px;
   }
 
-  .spread-celtic .card-inner {
+  .spread-celtic .card.flipped .card-inner {
     min-height: 150px;
   }
 
