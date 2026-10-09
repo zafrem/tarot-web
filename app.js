@@ -324,7 +324,6 @@ function startIdleTrail() {
   const phases = TRAIL_LINKS.map(() => Math.random() * 2 * Math.PI);
   const trail = [];
   const bg = cssVar("--bg");
-  const fg = cssVar("--fg");
   const accent = cssVar("--accent");
   const start = performance.now();
 
@@ -349,13 +348,12 @@ function startIdleTrail() {
       ctx.stroke();
     }
 
-    ctx.globalAlpha = 0.5;
-    ctx.strokeStyle = fg;
+    ctx.globalAlpha = 1;
+    ctx.strokeStyle = bg;
     ctx.lineWidth = 3;
     ctx.beginPath();
     pts.forEach((p, i) => (i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)));
     ctx.stroke();
-    ctx.globalAlpha = 1;
 
     idleTrailFrame = requestAnimationFrame(frame);
   };
