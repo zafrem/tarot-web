@@ -348,13 +348,6 @@ function startIdleTrail() {
       ctx.stroke();
     }
 
-    ctx.globalAlpha = 1;
-    ctx.strokeStyle = bg;
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    pts.forEach((p, i) => (i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)));
-    ctx.stroke();
-
     idleTrailFrame = requestAnimationFrame(frame);
   };
   idleTrailFrame = requestAnimationFrame(frame);
