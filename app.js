@@ -613,6 +613,10 @@ function applyLanguage(lang) {
 // a spread button again. On a failed draw (e.g. deck fetch error), they
 // re-enable so the user can retry.
 async function performDraw(spreadKey) {
+  // Briefly disabled only while the deck/translations fetch is in flight,
+  // to stop a rapid double-click from firing two draws -- always
+  // re-enabled afterward, so selecting a different spread at any time
+  // immediately draws it again without needing Reset first.
   const buttons = document.querySelectorAll(".spread-option");
   buttons.forEach((b) => (b.disabled = true));
   try {
@@ -626,6 +630,7 @@ async function performDraw(spreadKey) {
         "local files over file://."
     );
     console.error(err);
+  } finally {
     buttons.forEach((b) => (b.disabled = false));
   }
 }
