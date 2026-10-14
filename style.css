@@ -361,15 +361,19 @@ select {
   border: 2px solid var(--accent);
 }
 
-/* Not absolutely positioned, unlike .card-back: this is the one in-flow
-   child of .card-inner, so it's what actually determines the card's
-   rendered height. min-height on .card-inner is a floor, not a fixed
-   height — if this face's content (name/orientation/meaning) needs more
-   room, the card now grows to fit it instead of overflowing past a
-   fixed box and visually colliding with whatever follows. The rotateY
-   transform doesn't affect layout sizing, only the painted rotation. */
+/* Absolutely positioned like .card-back before a flip, so its content
+   (name/orientation/meaning — length varies per card) can't push
+   .card-inner taller than the fixed aspect-ratio box, even though
+   backface-visibility already hides it from view: that only hides
+   painting, not layout, so an in-flow .card-front still affected the
+   face-down card's size. Once .flipped is added below, it switches to
+   in-flow so it becomes the box that determines the revealed card's
+   height (a min-height floor on .card-inner, content can grow it
+   taller). The rotateY transform doesn't affect layout sizing, only
+   the painted rotation. */
 .card-front {
-  position: relative;
+  position: absolute;
+  inset: 0;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   border-radius: 8px;
@@ -377,6 +381,11 @@ select {
   transform: rotateY(180deg);
   background: var(--bg);
   text-align: center;
+}
+
+.card.flipped .card-front {
+  position: relative;
+  inset: auto;
 }
 
 .card-front img {
