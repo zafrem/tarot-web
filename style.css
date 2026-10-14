@@ -304,6 +304,12 @@ select {
    taller), so revealed text still never clips. */
 .card-inner {
   position: relative;
+  /* In the three-card spread, .card-inner is a grid item of its parent
+     .card (used for the subgrid rows). Grid items default to
+     min-width: auto, which lets the card image/text's own min-content
+     size win over the track width and overflow the viewport -- this
+     overrides that so the 100% width below is actually honored. */
+  min-width: 0;
   width: 100%;
   aspect-ratio: 849 / 1429;
   transition: transform 0.6s;
