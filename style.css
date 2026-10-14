@@ -292,13 +292,16 @@ select {
    the back look oversized too, even though the back has no content that
    needs the room. The front's own content can still overflow this box
    while hidden, since backface-visibility hides the overflow along with
-   the rest of the face. Once .flipped is added, the box switches to the
-   old content-driven sizing (a min-height floor, content can grow it
+   the rest of the face. The ratio matches the actual card art (849x1429)
+   so the back's design lines up with where the image will sit once
+   flipped, instead of a generic 2:3 box that's wider/shorter than the
+   real image. Once .flipped is added, the box switches to the old
+   content-driven sizing (a min-height floor, content can grow it
    taller), so revealed text still never clips. */
 .card-inner {
   position: relative;
   width: 100%;
-  aspect-ratio: 2 / 3;
+  aspect-ratio: 849 / 1429;
   transition: transform 0.6s;
   transform-style: preserve-3d;
 }
