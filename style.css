@@ -161,6 +161,10 @@ select {
   grid-row: 1 / span 3;
   display: grid;
   grid-template-rows: subgrid;
+  /* Without an explicit column, this card's own single implicit column
+     sizes to its content's max-content width (image/text), which can
+     grow past the parent grid's track and overflow the viewport. */
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .card {
