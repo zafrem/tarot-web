@@ -246,7 +246,7 @@ function renderSpread(cards, spreadKey) {
       }
     });
   });
-  document.getElementById("save-reading-button").hidden = false;
+  document.getElementById("reading-actions").hidden = false;
 }
 
 function fillCardModal(index) {
@@ -547,6 +547,79 @@ function saveReading() {
   exportCells(cells, exportFilename(currentReading.spreadKey));
 }
 
+const COPY_LOCALE = { en: "en-US", ko: "ko-KR", ja: "ja-JP", zh: "zh-CN" };
+
+function fillTemplate(template, vars) {
+  return template.replace(/\{(\w+)\}/g, (_, key) => vars[key] ?? "");
+}
+
+// Builds the current reading as a sequence of plain-text sentences (one
+// per position, in reading order) suitable for pasting into an LLM —
+// separate from the DOM/export rendering, which is laid out visually
+// rather than read top-to-bottom.
+function buildReadingText(lang) {
+  const { spreadKey, cards, drawnAt } = currentReading;
+  const spreadName = t(lang, `spreads.${spreadKey}`);
+  const dateStr = drawnAt.toLocaleString(COPY_LOCALE[lang] || "en-US", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+
+  const lines = [fillTemplate(t(lang, "copy.intro"), { spread: spreadName, date: dateStr })];
+
+  cards.forEach((card, i) => {
+    const { name, meaning, orientationLabel } = resolveCardText(card.englishName, card.orientation, lang);
+    const position = resolvePosition(spreadKey, i, lang);
+    const vars = { name, orientation: orientationLabel, meaning };
+    if (position) {
+      lines.push(fillTemplate(t(lang, "copy.positionLine"), { ...vars, label: position.label, description: position.description }));
+    } else {
+      lines.push(fillTemplate(t(lang, "copy.cardLine"), vars));
+    }
+  });
+
+  return lines.join("\n");
+}
+
+async function copyToClipboard(text) {
+  if (navigator.clipboard && window.isSecureContext) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+  // Fallback for browsers/contexts without the async Clipboard API
+  // (e.g. non-HTTPS local testing).
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.style.position = "fixed";
+  textarea.style.opacity = "0";
+  document.body.appendChild(textarea);
+  textarea.focus();
+  textarea.select();
+  try {
+    if (!document.execCommand("copy")) throw new Error("execCommand(copy) failed");
+  } finally {
+    document.body.removeChild(textarea);
+  }
+}
+
+async function copyReading() {
+  if (!currentReading) return;
+  const button = document.getElementById("copy-reading-button");
+  const original = t(currentLanguage, "copy.button");
+  try {
+    await copyToClipboard(buildReadingText(currentLanguage));
+    button.textContent = t(currentLanguage, "copy.copied");
+  } catch (err) {
+    console.error(err);
+    button.textContent = t(currentLanguage, "copy.failed");
+  }
+  button.disabled = true;
+  setTimeout(() => {
+    button.textContent = original;
+    button.disabled = false;
+  }, 1500);
+}
+
 function saveCard() {
   if (modalIndex === null) return;
   exportCells(
@@ -561,7 +634,7 @@ function resetReading() {
   container.innerHTML = "";
   container.hidden = true;
   currentReading = null;
-  document.getElementById("save-reading-button").hidden = true;
+  document.getElementById("reading-actions").hidden = true;
   document.querySelectorAll(".spread-option").forEach((b) => (b.disabled = false));
   startIdleTrail();
 }
@@ -576,6 +649,7 @@ function applyStaticUIText(lang) {
   document.getElementById("reset-button").textContent = t(lang, "reset");
   document.getElementById("save-reading-button").textContent = t(lang, "saveReading");
   document.getElementById("card-modal-save").textContent = t(lang, "saveCard");
+  document.getElementById("copy-reading-button").textContent = t(lang, "copy.button");
 
   for (const btn of document.querySelectorAll(".spread-option")) {
     btn.textContent = t(lang, `spreads.${btn.dataset.spread}`);
@@ -641,6 +715,7 @@ for (const btn of document.querySelectorAll(".spread-option")) {
 document.getElementById("card-modal-close").addEventListener("click", closeCardModal);
 document.getElementById("card-modal-save").addEventListener("click", saveCard);
 document.getElementById("save-reading-button").addEventListener("click", saveReading);
+document.getElementById("copy-reading-button").addEventListener("click", copyReading);
 document.querySelector("#card-modal .card-modal-backdrop").addEventListener("click", closeCardModal);
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && modalIndex !== null) closeCardModal();

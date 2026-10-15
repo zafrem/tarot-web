@@ -524,6 +524,22 @@ button:disabled {
   font-size: 0.95rem;
 }
 
+.reading-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.reading-actions .save-button {
+  margin-top: 0;
+}
+
+.reading-actions[hidden] {
+  display: none;
+}
+
 .card-modal-text .save-button {
   margin-top: 16px;
 }
